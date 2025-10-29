@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 펫 라이프 - 다마고치 게임</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .pet-area {
+            text-align: center;
+            background: linear-gradient(145deg, #f0f8ff, #e6f3ff);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #ff6b9d;
+        }
+
+        .pet-display {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            background: linear-gradient(145deg, #fff, #f0f8ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: 4px solid #ff6b9d;
+            box-shadow: 0 10px 20px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pet-display:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .pet-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b9d;
+            margin-bottom: 10px;
+        }
+
+        .pet-age {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .stats-panel {
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #4ecdc4;
+        }
+
+        .stats-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stat-bar {
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .stat-name {
+            color: #333;
+        }
+
+        .stat-value {
+            color: #666;
+        }
+
+        .stat-progress {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .hunger-fill { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
+        .happiness-fill { background: linear-gradient(90deg, #4ecdc4, #6dd5ed); }
+        .health-fill { background: linear-gradient(90deg, #45b7d1, #96c7ed); }
+        .energy-fill { background: linear-gradient(90deg, #f9ca24, #f0932b); }
+
+        .actions-panel {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #6c5ce7;
+            margin-top: 20px;
+        }
+
+        .actions-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(145deg, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .inventory-panel {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #fd79a8;
+            margin-top: 20px;
+        }
+
+        .inventory-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fd79a8;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .inventory-slot {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .inventory-slot:hover {
+            border-color: #fd79a8;
+            background: #fff5f8;
+        }
+
+        .inventory-slot.empty {
+            background: #f8f9fa;
+            color: #999;
+        }
+
+        .item-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .item-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-count {
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        .message-log {
+            grid-column: 1 / -1;
+            background: linear-gradient(145deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #00b894;
+            margin-top: 20px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .message-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00b894;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .message {
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .message:last-child {
+            border-bottom: none;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .game-over h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(145deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .pet-display {
+                width: 150px;
+                height: 150px;
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="pet-area">
+            <div class="pet-display" id="petDisplay">🐱</div>
+            <div class="pet-name" id="petName">새로운 펫</div>
+            <div class="pet-age" id="petAge">나이: 0일</div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stats-title">펫 상태</div>
+            
+            <div class="stat-bar">
+                <div class="stat-label">
+                    <span class="stat-name">🍎 배고픔</span>
+                    <span class="stat-value" id="hungerValue">100</span>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-fill hunger-fill" id="hungerBar" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="stat-bar">
+                <div class="stat-label">
+                    <span class="stat-name">😊 행복</span>
+                    <span class="stat-value" id="happinessValue">100</span>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-fill happiness-fill" id="happinessBar" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="stat-bar">
+                <div class="stat-label">
+                    <span class="stat-name">❤️ 건강</span>
+                    <span class="stat-value" id="healthValue">100</span>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-fill health-fill" id="healthBar" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <div class="stat-bar">
+                <div class="stat-label">
+                    <span class="stat-name">⚡ 에너지</span>
+                    <span class="stat-value" id="energyValue">100</span>
+                </div>
+                <div class="stat-progress">
+                    <div class="stat-fill energy-fill" id="energyBar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-panel">
+            <div class="actions-title">액션</div>
+            <div class="action-buttons">
+                <button class="action-btn" id="feedBtn">🍎 먹이주기</button>
+                <button class="action-btn" id="playBtn">🎮 놀아주기</button>
+                <button class="action-btn" id="cleanBtn">🧽 청소하기</button>
+                <button class="action-btn" id="sleepBtn">😴 재우기</button>
+                <button class="action-btn" id="trainBtn">🎯 훈련하기</button>
+                <button class="action-btn" id="medicineBtn">💊 약주기</button>
+            </div>
+        </div>
+
+        <div class="inventory-panel">
+            <div class="inventory-title">인벤토리</div>
+            <div class="inventory-grid" id="inventoryGrid">
+                <!-- 인벤토리 슬롯들이 여기에 동적으로 생성됩니다 -->
+            </div>
+        </div>
+
+        <div class="message-log">
+            <div class="message-title">펫의 소식</div>
+            <div id="messageList">
+                <div class="message">새로운 펫이 태어났습니다! 🎉</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <h2>게임 오버</h2>
+            <p id="gameOverMessage">펫이 집으로 돌아갔습니다...</p>
+            <button class="restart-btn" onclick="restartGame()">새 게임 시작</button>
+        </div>
+    </div>
+
+    <script>
+        // 게임 상태
+        let gameState = {
+            pet: {
+                name: "새로운 펫",
+                type: "cat",
+                age: 0,
+                hunger: 100,
+                happiness: 100,
+                health: 100,
+                energy: 100,
+                isSleeping: false,
+                isSick: false
+            },
+            inventory: {
+                food: 5,
+                toys: 3,
+                medicine: 2,
+                treats: 4
+            },
+            messages: ["새로운 펫이 태어났습니다! 🎉"]
+        };
+
+        // 펫 타입별 이모지
+        const petEmojis = {
+            cat: "🐱",
+            dog: "🐶",
+            rabbit: "🐰",
+            bird: "🐦",
+            fish: "🐠"
+        };
+
+        // 게임 초기화
+        function initGame() {
+            // 저장된 게임이 있으면 로드, 없으면 새 게임 시작
+            if (!loadGame()) {
+                addMessage("새로운 펫이 태어났습니다! 🎉");
+            }
+            
+            updateDisplay();
+            updateInventory();
+            startGameLoop();
+        }
+
+        // 디스플레이 업데이트
+        function updateDisplay() {
+            document.getElementById('petDisplay').textContent = petEmojis[gameState.pet.type];
+            document.getElementById('petName').textContent = gameState.pet.name;
+            document.getElementById('petAge').textContent = `나이: ${gameState.pet.age}일`;
+            
+            // 상태 바 업데이트
+            updateStatBar('hunger', gameState.pet.hunger);
+            updateStatBar('happiness', gameState.pet.happiness);
+            updateStatBar('health', gameState.pet.health);
+            updateStatBar('energy', gameState.pet.energy);
+        }
+
+        // 상태 바 업데이트
+        function updateStatBar(stat, value) {
+            const bar = document.getElementById(stat + 'Bar');
+            const valueDisplay = document.getElementById(stat + 'Value');
+            
+            bar.style.width = value + '%';
+            valueDisplay.textContent = value;
+            
+            // 위험 상태 색상 변경
+            if (value < 20) {
+                bar.style.background = 'linear-gradient(90deg, #ff6b6b, #ff4757)';
+            } else if (value < 50) {
+                bar.style.background = 'linear-gradient(90deg, #ffa726, #ff9800)';
+            }
+        }
+
+        // 인벤토리 업데이트
+        function updateInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            const items = [
+                { name: '음식', icon: '🍎', count: gameState.inventory.food, key: 'food' },
+                { name: '장난감', icon: '🎮', count: gameState.inventory.toys, key: 'toys' },
+                { name: '약', icon: '💊', count: gameState.inventory.medicine, key: 'medicine' },
+                { name: '간식', icon: '🍭', count: gameState.inventory.treats, key: 'treats' }
+            ];
+            
+            items.forEach(item => {
+                const slot = document.createElement('div');
+                slot.className = 'inventory-slot';
+                slot.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-count">${item.count}개</div>
+                `;
+                grid.appendChild(slot);
+            });
+        }
+
+        // 메시지 추가
+        function addMessage(message) {
+            gameState.messages.unshift(message);
+            if (gameState.messages.length > 10) {
+                gameState.messages.pop();
+            }
+            
+            const messageList = document.getElementById('messageList');
+            messageList.innerHTML = gameState.messages.map(msg => 
+                `<div class="message">${msg}</div>`
+            ).join('');
+        }
+
+        // 게임 루프 시작
+        function startGameLoop() {
+            setInterval(() => {
+                if (!gameState.pet.isSleeping) {
+                    // 상태 자연 감소
+                    gameState.pet.hunger = Math.max(0, gameState.pet.hunger - 1);
+                    gameState.pet.happiness = Math.max(0, gameState.pet.happiness - 0.5);
+                    gameState.pet.energy = Math.max(0, gameState.pet.energy - 0.8);
+                    
+                    // 건강 상태 체크
+                    if (gameState.pet.hunger < 20 || gameState.pet.happiness < 20) {
+                        gameState.pet.health = Math.max(0, gameState.pet.health - 2);
+                    }
+                    
+                    // 나이 증가 (매 5분마다)
+                    if (Math.random() < 0.01) {
+                        gameState.pet.age++;
+                        addMessage(`펫이 ${gameState.pet.age}일이 되었습니다! 🎂`);
+                    }
+                    
+                    // 랜덤 이벤트 체크
+                    checkRandomEvents();
+                } else {
+                    // 잠자는 동안 에너지 회복
+                    gameState.pet.energy = Math.min(100, gameState.pet.energy + 2);
+                    gameState.pet.health = Math.min(100, gameState.pet.health + 1);
+                }
+                
+                updateDisplay();
+                checkGameOver();
+                saveGame();
+            }, 1000);
+        }
+
+        // 랜덤 이벤트 체크
+        function checkRandomEvents() {
+            const random = Math.random();
+            
+            // 5% 확률로 랜덤 이벤트 발생
+            if (random < 0.05) {
+                const events = [
+                    {
+                        message: "펫이 우연히 맛있는 간식을 찾았습니다! 🍭",
+                        effect: () => {
+                            gameState.inventory.treats++;
+                            gameState.pet.happiness += 10;
+                        }
+                    },
+                    {
+                        message: "펫이 새로운 장난감을 발견했습니다! 🎮",
+                        effect: () => {
+                            gameState.inventory.toys++;
+                            gameState.pet.happiness += 15;
+                        }
+                    },
+                    {
+                        message: "펫이 아프기 시작했습니다... 🤒",
+                        effect: () => {
+                            gameState.pet.health -= 20;
+                            gameState.pet.isSick = true;
+                        }
+                    },
+                    {
+                        message: "펫이 매우 행복해 보입니다! 😊",
+                        effect: () => {
+                            gameState.pet.happiness += 20;
+                            gameState.pet.health += 10;
+                        }
+                    },
+                    {
+                        message: "펫이 에너지가 넘쳐흐릅니다! ⚡",
+                        effect: () => {
+                            gameState.pet.energy += 30;
+                        }
+                    },
+                    {
+                        message: "펫이 배가 고파 보입니다... 😢",
+                        effect: () => {
+                            gameState.pet.hunger -= 15;
+                        }
+                    }
+                ];
+                
+                const event = events[Math.floor(Math.random() * events.length)];
+                event.effect();
+                addMessage(event.message);
+                updateDisplay();
+                updateInventory();
+            }
+        }
+
+        // 게임 오버 체크
+        function checkGameOver() {
+            if (gameState.pet.health <= 0) {
+                showGameOver();
+            }
+        }
+
+        // 게임 오버 화면
+        function showGameOver() {
+            document.getElementById('gameOver').style.display = 'flex';
+            document.getElementById('gameOverMessage').textContent = 
+                `${gameState.pet.name}이(가) 집으로 돌아갔습니다... 😢`;
+        }
+
+        // 게임 저장
+        function saveGame() {
+            try {
+                localStorage.setItem('tamagotchiGame', JSON.stringify(gameState));
+            } catch (e) {
+                console.log('게임 저장 실패:', e);
+            }
+        }
+
+        // 게임 로드
+        function loadGame() {
+            try {
+                const saved = localStorage.getItem('tamagotchiGame');
+                if (saved) {
+                    gameState = JSON.parse(saved);
+                    addMessage("게임을 불러왔습니다! 📁");
+                    return true;
+                }
+            } catch (e) {
+                console.log('게임 로드 실패:', e);
+            }
+            return false;
+        }
+
+        // 게임 재시작
+        function restartGame() {
+            gameState = {
+                pet: {
+                    name: "새로운 펫",
+                    type: "cat",
+                    age: 0,
+                    hunger: 100,
+                    happiness: 100,
+                    health: 100,
+                    energy: 100,
+                    isSleeping: false,
+                    isSick: false
+                },
+                inventory: {
+                    food: 5,
+                    toys: 3,
+                    medicine: 2,
+                    treats: 4
+                },
+                messages: ["새로운 펫이 태어났습니다! 🎉"]
+            };
+            
+            document.getElementById('gameOver').style.display = 'none';
+            updateDisplay();
+            updateInventory();
+        }
+
+        // 액션 함수들
+        function feedPet() {
+            if (gameState.inventory.food > 0) {
+                gameState.inventory.food--;
+                gameState.pet.hunger = Math.min(100, gameState.pet.hunger + 20);
+                gameState.pet.happiness = Math.min(100, gameState.pet.happiness + 5);
+                addMessage(`${gameState.pet.name}이(가) 맛있게 먹었습니다! 🍎`);
+                updateDisplay();
+                updateInventory();
+            } else {
+                addMessage("음식이 없습니다! 🚫");
+            }
+        }
+
+        function playWithPet() {
+            if (gameState.inventory.toys > 0 && gameState.pet.energy > 10) {
+                gameState.inventory.toys--;
+                gameState.pet.happiness = Math.min(100, gameState.pet.happiness + 25);
+                gameState.pet.energy = Math.max(0, gameState.pet.energy - 15);
+                gameState.pet.hunger = Math.max(0, gameState.pet.hunger - 5);
+                addMessage(`${gameState.pet.name}이(가) 즐겁게 놀았습니다! 🎮`);
+                updateDisplay();
+                updateInventory();
+            } else if (gameState.inventory.toys <= 0) {
+                addMessage("장난감이 없습니다! 🚫");
+            } else {
+                addMessage("펫이 너무 피곤합니다! 😴");
+            }
+        }
+
+        function cleanPet() {
+            gameState.pet.happiness = Math.min(100, gameState.pet.happiness + 15);
+            gameState.pet.health = Math.min(100, gameState.pet.health + 10);
+            addMessage(`${gameState.pet.name}이(가) 깨끗해졌습니다! ✨`);
+            updateDisplay();
+        }
+
+        function putPetToSleep() {
+            if (!gameState.pet.isSleeping) {
+                gameState.pet.isSleeping = true;
+                addMessage(`${gameState.pet.name}이(가) 잠들었습니다... 😴`);
+                
+                setTimeout(() => {
+                    gameState.pet.isSleeping = false;
+                    gameState.pet.energy = Math.min(100, gameState.pet.energy + 30);
+                    addMessage(`${gameState.pet.name}이(가) 깨어났습니다! 😊`);
+                    updateDisplay();
+                }, 10000); // 10초간 잠
+            } else {
+                addMessage("펫이 이미 잠들어 있습니다! 😴");
+            }
+        }
+
+        function trainPet() {
+            if (gameState.pet.energy > 20) {
+                gameState.pet.energy = Math.max(0, gameState.pet.energy - 20);
+                gameState.pet.happiness = Math.min(100, gameState.pet.happiness + 10);
+                gameState.pet.hunger = Math.max(0, gameState.pet.hunger - 10);
+                addMessage(`${gameState.pet.name}이(가) 새로운 기술을 배웠습니다! 🎯`);
+                updateDisplay();
+            } else {
+                addMessage("펫이 너무 피곤해서 훈련할 수 없습니다! 😴");
+            }
+        }
+
+        function giveMedicine() {
+            if (gameState.inventory.medicine > 0) {
+                gameState.inventory.medicine--;
+                gameState.pet.health = Math.min(100, gameState.pet.health + 30);
+                gameState.pet.happiness = Math.max(0, gameState.pet.happiness - 10);
+                addMessage(`${gameState.pet.name}이(가) 약을 먹었습니다! 💊`);
+                updateDisplay();
+                updateInventory();
+            } else {
+                addMessage("약이 없습니다! 🚫");
+            }
+        }
+
+        // 이벤트 리스너
+        document.getElementById('feedBtn').addEventListener('click', feedPet);
+        document.getElementById('playBtn').addEventListener('click', playWithPet);
+        document.getElementById('cleanBtn').addEventListener('click', cleanPet);
+        document.getElementById('sleepBtn').addEventListener('click', putPetToSleep);
+        document.getElementById('trainBtn').addEventListener('click', trainPet);
+        document.getElementById('medicineBtn').addEventListener('click', giveMedicine);
+
+        // 게임 시작
+        initGame();
+    </script>
+</body>
+</html>

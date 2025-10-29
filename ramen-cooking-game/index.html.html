@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramyun Cooking Game - Chef's Challenge</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500, #ff6b6b);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+
+        #game-container {
+            background: linear-gradient(145deg, #fff5f5, #ffe8e8);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            padding: 15px;
+            border: 3px solid #ff6b6b;
+            max-width: 100%;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .game-title {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-subtitle {
+            text-align: center;
+            color: #ff8c42;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .instructions h3 {
+            color: #ff6b6b;
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .score-display {
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #ff6b6b;
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .order-display {
+            position: relative;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #4ade80;
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 200px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .order-display h4 {
+            margin: 0 0 10px 0;
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        .order-item {
+            margin: 3px 0;
+            padding: 2px 5px;
+            background: rgba(74, 222, 128, 0.2);
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .level-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #4ade80;
+            font-weight: bold;
+            color: #4ade80;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .target-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid #ff6b6b;
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            height: 20px;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .patience-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 8px;
+            margin: 5px 0;
+            border: 2px solid #fbbf24;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .patience-fill {
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            height: 15px;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        .patience-text {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        /* 게임 영역 스타일 */
+        .game-area {
+            background: #f5f5dc;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            border: 2px solid #8b4513;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .kitchen {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .kettle {
+            background: #c0c0c0;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            border: 2px solid #8b4513;
+            transition: all 0.3s ease;
+        }
+
+        .kettle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .kettle-body {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .pot {
+            background: #8b4513;
+            border-radius: 10px;
+            padding: 15px;
+            border: 3px solid #654321;
+            position: relative;
+            min-width: 120px;
+            min-height: 80px;
+        }
+
+        .pot-body {
+            background: #2a1810;
+            border-radius: 5px;
+            height: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .water {
+            background: #87ceeb;
+            height: 0%;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.5s ease;
+        }
+
+        .water-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            z-index: 10;
+        }
+
+        .required-water {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #8b4513;
+            font-weight: bold;
+        }
+
+        .gas-burner {
+            background: #666;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .gas-burner:hover {
+            transform: scale(1.1);
+        }
+
+        .fire {
+            width: 20px;
+            height: 20px;
+            background: #ff4500;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .fire.active {
+            opacity: 1;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .ingredient-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid #ff8c42;
+        }
+
+        .ingredient-btn:hover {
+            background: #ff8c42;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .ingredient-btn.added {
+            background: #4ade80;
+            border-color: #22c55e;
+        }
+
+        .tray {
+            background: #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            border: 2px solid #999;
+            transition: all 0.3s ease;
+        }
+
+        .tray:hover {
+            background: #4ade80;
+            transform: scale(1.05);
+        }
+
+        .tray-body {
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .character {
+            font-size: 3rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            #game-container {
+                padding: 10px;
+            }
+            
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .game-subtitle {
+                font-size: 1rem;
+            }
+            
+            .instructions {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+            
+            .instructions p {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+            
+            .order-display, .score-display {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1 class="game-title">🍜 Ramyun Cooking Challenge 🍜</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="level-display" id="level-display">Level 1</div>
+            <div class="target-display" id="target-display">Target: $3,000</div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+            <div class="order-display" id="order-display">
+                <h4>📝 Customer Order</h4>
+                <div id="order-items"></div>
+                <div class="patience-bar" id="patience-bar" style="display: none;">
+                    <div class="patience-text">Customer Patience</div>
+                    <div class="patience-fill" id="patience-fill"></div>
+                </div>
+            </div>
+            <div class="score-display" id="score-display">Revenue: $0</div>
+        </div>
+        
+        <!-- 진행률 바 -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill">
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+        </div>
+        
+        <!-- 게임 영역 -->
+        <div class="game-area">
+            <div class="kitchen">
+                <!-- 주전자 -->
+                <div class="kettle" id="kettle" onclick="pourWater()">
+                    <div class="kettle-body">💧</div>
+                    <div class="kettle-handle"></div>
+                </div>
+                
+                <!-- 냄비 -->
+                <div class="pot" id="pot">
+                    <div class="pot-body">
+                        <div class="water" id="water"></div>
+                        <div class="water-indicator" id="water-indicator">0ml</div>
+                    </div>
+                    <div class="required-water" id="required-water">필요: 50ml</div>
+                </div>
+                
+                <!-- 가스 불 -->
+                <div class="gas-burner" id="gas" onclick="toggleFire()">
+                    <div class="fire" id="fire"></div>
+                </div>
+                
+                <!-- 재료 버튼들 -->
+                <div class="ingredients">
+                    <button class="ingredient-btn" id="ramen-btn" onclick="addIngredient('ramen')">🍜 Noodles</button>
+                    <button class="ingredient-btn" id="soup-btn" onclick="addIngredient('soup')">🍲 Soup</button>
+                    <button class="ingredient-btn" id="greenOnion-btn" onclick="addIngredient('greenOnion')">🧅 Green Onion</button>
+                    <button class="ingredient-btn" id="egg-btn" onclick="addIngredient('egg')">🥚 Egg</button>
+                    <button class="ingredient-btn" id="cheese-btn" onclick="addIngredient('cheese')" style="display: none;">🧀 Cheese</button>
+                </div>
+                
+                <!-- 서빙 쟁반 -->
+                <div class="tray" id="tray" onclick="serveRamen()">
+                    <div class="tray-body">🍽️ Serve</div>
+                </div>
+                
+                <!-- 짱둥이 캐릭터 -->
+                <div class="character">😊</div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>🎮 Controls</h3>
+            <p>• Click kettle: Pour water</p>
+            <p>• Click ingredient buttons: Add noodles, soup, green onion, egg</p>
+            <p>• Click gas burner: Turn fire on/off</p>
+            <p>• Click tray: Serve ramyun</p>
+            <p>• Add green onion/egg while boiling for bonus!</p>
+        </div>
+    </div>
+
+    <script>
+        // 게임 상태
+        let gameState = {
+            score: 0,
+            level: 1,
+            target: 3000, // 레벨별 목표 매출
+            potWater: 0,
+            maxWater: 100,
+            ramenAdded: false,
+            soupAdded: false,
+            greenOnionAdded: false,
+            eggAdded: false,
+            cheeseAdded: false, // 레벨 2부터 등장
+            boiling: false,
+            boilStartTime: 0,
+            optimalBoilTime: 5,
+            maxBoilTime: 10,
+            currentOrder: {},
+            serveCount: 0,
+            waterPerClick: 20, // 클릭당 물량
+            customerPatience: 30, // 손님 인내심 (초)
+            requiredWater: 50 // 손님이 요청한 물량
+        };
+
+        // 레벨별 설정
+        const levelSettings = {
+            1: {
+                target: 3000,
+                waterPerClick: 25,
+                customerPatience: 30,
+                optimalBoilTime: 5,
+                maxBoilTime: 10,
+                availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg'],
+                orderComplexity: 0.3,
+                waterRange: { min: 40, max: 80 }, // 물량 범위
+                waterTolerance: 12.5 // 허용 오차 (클릭 단위의 절반)
+            },
+            2: {
+                target: 8000,
+                waterPerClick: 20,
+                customerPatience: 25,
+                optimalBoilTime: 4,
+                maxBoilTime: 8,
+                availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'],
+                orderComplexity: 0.5,
+                waterRange: { min: 30, max: 90 },
+                waterTolerance: 10 // 클릭 단위의 절반
+            },
+            3: {
+                target: 15000,
+                waterPerClick: 15,
+                customerPatience: 20,
+                optimalBoilTime: 3,
+                maxBoilTime: 6,
+                availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'],
+                orderComplexity: 0.7,
+                waterRange: { min: 20, max: 100 },
+                waterTolerance: 7.5 // 클릭 단위의 절반
+            }
+        };
+
+        // 게임 초기화
+        function initGame() {
+            updateLevelSettings();
+            generateNewOrder();
+            updateScoreDisplay();
+            updateWaterLevel();
+            updateFireDisplay();
+            updateIngredientButtons();
+            updateProgressBar();
+            startPatienceTimer();
+        }
+
+        // 레벨 설정 업데이트
+        function updateLevelSettings() {
+            const settings = levelSettings[gameState.level];
+            gameState.target = settings.target;
+            gameState.waterPerClick = settings.waterPerClick;
+            gameState.customerPatience = settings.customerPatience;
+            gameState.optimalBoilTime = settings.optimalBoilTime;
+            gameState.maxBoilTime = settings.maxBoilTime;
+            
+            // Update UI
+            document.getElementById('level-display').textContent = `Level ${gameState.level}`;
+            document.getElementById('target-display').textContent = `Target: $${settings.target.toLocaleString()}`;
+            
+            // Show/hide cheese button
+            const cheeseBtn = document.getElementById('cheese-btn');
+            if (settings.availableIngredients.includes('cheese')) {
+                cheeseBtn.style.display = 'inline-block';
+            } else {
+                cheeseBtn.style.display = 'none';
+            }
+        }
+
+        // Pour water
+        function pourWater() {
+            if (gameState.potWater < gameState.maxWater) {
+                gameState.potWater += gameState.waterPerClick;
+                if (gameState.potWater > gameState.maxWater) {
+                    gameState.potWater = gameState.maxWater;
+                }
+                updateWaterLevel();
+                console.log('Water added, current amount:', gameState.potWater);
+            }
+        }
+
+        // Turn fire on/off
+        function toggleFire() {
+            if (gameState.potWater > 0) {
+                gameState.boiling = !gameState.boiling;
+                if (gameState.boiling) {
+                    gameState.boilStartTime = Date.now();
+                }
+                updateFireDisplay();
+                console.log('Fire status:', gameState.boiling ? 'on' : 'off');
+            }
+        }
+
+        // Add ingredient
+        function addIngredient(type) {
+            const settings = levelSettings[gameState.level];
+            
+            if (type === 'ramen' || type === 'soup') {
+                if (gameState.potWater > 0 && !gameState[type + 'Added']) {
+                    gameState[type + 'Added'] = true;
+                    updateIngredientButtons();
+                    console.log(type + ' added');
+                }
+            } else if (type === 'greenOnion' || type === 'egg' || type === 'cheese') {
+                if (gameState.boiling && !gameState[type + 'Added'] && settings.availableIngredients.includes(type)) {
+                    gameState[type + 'Added'] = true;
+                    updateIngredientButtons();
+                    console.log(type + ' added (bonus!)');
+                }
+            }
+        }
+
+        // Serve
+        function serveRamen() {
+            if (!gameState.ramenAdded || !gameState.soupAdded) {
+                alert('Ramyun and soup are required!');
+                return;
+            }
+            
+            // Check order match
+            let orderMatch = 0;
+            let totalOrderItems = 0;
+            
+            if (gameState.currentOrder.ramen) totalOrderItems++;
+            if (gameState.currentOrder.soup) totalOrderItems++;
+            if (gameState.currentOrder.greenOnion) totalOrderItems++;
+            if (gameState.currentOrder.egg) totalOrderItems++;
+            
+            if (gameState.ramenAdded && gameState.currentOrder.ramen) orderMatch++;
+            if (gameState.soupAdded && gameState.currentOrder.soup) orderMatch++;
+            if (gameState.greenOnionAdded && gameState.currentOrder.greenOnion) orderMatch++;
+            if (gameState.eggAdded && gameState.currentOrder.egg) orderMatch++;
+            
+            // Calculate timing score
+            let timingScore = 1;
+            if (gameState.boiling) {
+                let boilTime = (Date.now() - gameState.boilStartTime) / 1000;
+                if (boilTime >= gameState.optimalBoilTime && boilTime <= gameState.maxBoilTime) {
+                    timingScore = 1.5; // Perfect timing
+                } else if (boilTime < gameState.optimalBoilTime) {
+                    timingScore = 0.7; // Too early
+                } else {
+                    timingScore = 0.5; // Too late
+                }
+            }
+            
+            // Water accuracy score
+            const settings = levelSettings[gameState.level];
+            const waterTolerance = settings.waterTolerance;
+            const requiredWater = gameState.requiredWater;
+            const currentWater = gameState.potWater;
+            const waterAccuracy = Math.abs(currentWater - requiredWater) <= waterTolerance ? 1.5 : 0.8;
+            
+            // Bonus score (add green onion/egg while boiling)
+            let bonusScore = 1;
+            if (gameState.greenOnionAdded && gameState.boiling) bonusScore += 0.3;
+            if (gameState.eggAdded && gameState.boiling) bonusScore += 0.3;
+            if (gameState.cheeseAdded && gameState.boiling) bonusScore += 0.3;
+            
+            // Calculate final score
+            let baseScore = 300;
+            let orderAccuracy = totalOrderItems > 0 ? orderMatch / totalOrderItems : 0;
+            let finalScore = Math.floor(baseScore * orderAccuracy * timingScore * bonusScore * waterAccuracy);
+            
+            gameState.score += finalScore;
+            gameState.serveCount++;
+            
+            // Update score
+            updateScoreDisplay();
+            updateProgressBar(); // Update progress bar immediately
+            
+            // Generate next order
+            generateNewOrder();
+            resetCooking();
+            
+            // Check target achievement
+            if (gameState.score >= gameState.target) {
+                if (gameState.level < 3) {
+                    gameState.level++;
+                    alert(`Level ${gameState.level} achieved! 🎉`);
+                    updateLevelSettings();
+                    resetCooking();
+                    generateNewOrder();
+                    updateProgressBar();
+                } else {
+                    alert('All levels completed! 🏆');
+                    resetGame();
+                }
+            }
+        }
+
+        // Generate new order
+        function generateNewOrder() {
+            const settings = levelSettings[gameState.level];
+            const complexity = settings.orderComplexity;
+            
+            // Generate water order (based on water click units)
+            const waterRange = settings.waterRange;
+            const minClick = Math.ceil(waterRange.min / gameState.waterPerClick);
+            const maxClick = Math.floor(waterRange.max / gameState.waterPerClick);
+            const randomClicks = Math.floor(Math.random() * (maxClick - minClick + 1)) + minClick;
+            gameState.requiredWater = randomClicks * gameState.waterPerClick;
+            
+            gameState.currentOrder = {
+                ramen: true, // Ramyun always included
+                soup: true,  // Soup always included
+                greenOnion: Math.random() < (0.5 + complexity * 0.3),
+                egg: Math.random() < (0.3 + complexity * 0.4),
+                cheese: settings.availableIngredients.includes('cheese') && Math.random() < (0.2 + complexity * 0.3),
+                water: gameState.requiredWater
+            };
+            
+            updateOrderDisplay();
+            updateRequiredWaterDisplay();
+            startPatienceTimer();
+        }
+
+        // Update order display
+        function updateOrderDisplay() {
+            let orderItems = document.getElementById('order-items');
+            orderItems.innerHTML = '';
+            
+            // Display water order
+            let waterItem = document.createElement('div');
+            waterItem.className = 'order-item';
+            waterItem.textContent = `💧 Water ${gameState.requiredWater}ml`;
+            waterItem.style.backgroundColor = 'rgba(135, 206, 235, 0.3)';
+            orderItems.appendChild(waterItem);
+            
+            if (gameState.currentOrder.ramen) {
+                let item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = '🍜 Noodles';
+                orderItems.appendChild(item);
+            }
+            
+            if (gameState.currentOrder.soup) {
+                let item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = '🍲 Soup';
+                orderItems.appendChild(item);
+            }
+            
+            if (gameState.currentOrder.greenOnion) {
+                let item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = '🧅 Green Onion';
+                orderItems.appendChild(item);
+            }
+            
+            if (gameState.currentOrder.egg) {
+                let item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = '🥚 Egg';
+                orderItems.appendChild(item);
+            }
+            
+            if (gameState.currentOrder.cheese) {
+                let item = document.createElement('div');
+                item.className = 'order-item';
+                item.textContent = '🧀 Cheese';
+                orderItems.appendChild(item);
+            }
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('score-display').textContent = `Revenue: $${gameState.score}`;
+        }
+
+        // Update water level
+        function updateWaterLevel() {
+            let waterElement = document.getElementById('water');
+            let waterIndicator = document.getElementById('water-indicator');
+            let waterHeight = (gameState.potWater / gameState.maxWater) * 100;
+            
+            waterElement.style.height = waterHeight + '%';
+            waterIndicator.textContent = gameState.potWater + 'ml';
+            
+            // Color change based on water amount
+            const settings = levelSettings[gameState.level];
+            const tolerance = settings.waterTolerance;
+            const required = gameState.requiredWater;
+            const current = gameState.potWater;
+            
+            if (Math.abs(current - required) <= tolerance) {
+                waterElement.style.backgroundColor = '#90ee90'; // Perfect amount - green
+            } else if (current > required + tolerance) {
+                waterElement.style.backgroundColor = '#ffb6c1'; // Too much - pink
+            } else if (current < required - tolerance) {
+                waterElement.style.backgroundColor = '#87ceeb'; // Not enough - blue
+            } else {
+                waterElement.style.backgroundColor = '#87ceeb'; // Default blue
+            }
+        }
+
+        // Update required water display
+        function updateRequiredWaterDisplay() {
+            document.getElementById('required-water').textContent = `Required: ${gameState.requiredWater}ml`;
+        }
+
+        // Update fire display
+        function updateFireDisplay() {
+            let fireElement = document.getElementById('fire');
+            if (gameState.boiling) {
+                fireElement.classList.add('active');
+            } else {
+                fireElement.classList.remove('active');
+            }
+        }
+
+        // Update ingredient button states
+        function updateIngredientButtons() {
+            const buttons = ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'];
+            buttons.forEach(type => {
+                let button = document.getElementById(type + '-btn');
+                if (button) {
+                    if (gameState[type + 'Added']) {
+                        button.classList.add('added');
+                    } else {
+                        button.classList.remove('added');
+                    }
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = (gameState.score / gameState.target) * 100;
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            progressFill.style.width = Math.min(progress, 100) + '%';
+            progressText.textContent = Math.round(progress) + '%';
+        }
+
+        // Start customer patience timer
+        function startPatienceTimer() {
+            const patienceBar = document.getElementById('patience-bar');
+            const patienceFill = document.getElementById('patience-fill');
+            
+            patienceBar.style.display = 'block';
+            patienceFill.style.width = '100%';
+            
+            let timeLeft = gameState.customerPatience;
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                const percentage = (timeLeft / gameState.customerPatience) * 100;
+                patienceFill.style.width = percentage + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    patienceBar.style.display = 'none';
+                    // Customer left - penalty
+                    gameState.score = Math.max(0, gameState.score - 100);
+                    updateScoreDisplay();
+                    updateProgressBar();
+                    generateNewOrder();
+                }
+            }, 1000);
+            
+            // Clear timer when serving
+            gameState.currentPatienceTimer = timer;
+        }
+
+        // Reset cooking state
+        function resetCooking() {
+            gameState.potWater = 0;
+            gameState.ramenAdded = false;
+            gameState.soupAdded = false;
+            gameState.greenOnionAdded = false;
+            gameState.eggAdded = false;
+            gameState.cheeseAdded = false;
+            gameState.boiling = false;
+            
+            // Clear patience timer
+            if (gameState.currentPatienceTimer) {
+                clearInterval(gameState.currentPatienceTimer);
+            }
+            
+            updateWaterLevel();
+            updateFireDisplay();
+            updateIngredientButtons();
+        }
+
+        // Reset game
+        function resetGame() {
+            gameState.score = 0;
+            gameState.level = 1;
+            gameState.serveCount = 0;
+            resetCooking();
+            updateLevelSettings();
+            updateScoreDisplay();
+            updateProgressBar();
+        }
+
+        // Initialize game on page load
+        window.onload = function() {
+            initGame();
+        };
+    </script>
+</body>
+</html>

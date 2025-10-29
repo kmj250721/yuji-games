@@ -1,0 +1,527 @@
+b<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Play GOM</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 50%);
+            z-index: -2;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        /* Floating particles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            z-index: -1;
+            animation: sparkle 20s linear infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+            25% { transform: translateY(-15px) rotate(1deg) scale(1.02); }
+            50% { transform: translateY(-25px) rotate(0deg) scale(1.05); }
+            75% { transform: translateY(-15px) rotate(-1deg) scale(1.02); }
+        }
+
+        @keyframes sparkle {
+            0% { transform: translateY(0px) translateX(0px); }
+            100% { transform: translateY(-100px) translateX(50px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: slideInDown 1.2s ease-out;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-80px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 5rem;
+            color: #fff;
+            text-shadow: 
+                4px 4px 0px #ff6b6b, 
+                8px 8px 0px #4ecdc4,
+                12px 12px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            animation: bounce 3s infinite, glow 2s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .title::before {
+            content: '🎮';
+            position: absolute;
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: rotate 2s linear infinite;
+        }
+
+        .title::after {
+            content: '🎮';
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            animation: rotate 2s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-15px);
+            }
+            60% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes glow {
+            from { 
+                filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.8)) drop-shadow(0 0 20px rgba(78, 205, 196, 0.6));
+            }
+            to { 
+                filter: drop-shadow(0 0 20px rgba(255, 107, 107, 1)) drop-shadow(0 0 30px rgba(78, 205, 196, 0.8));
+            }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 1.5s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.2),
+                0 5px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; }
+        .game-card:nth-child(5) { animation-delay: 0.5s; }
+        .game-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(80px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .game-card:hover {
+            transform: translateY(-15px) scale(1.05) rotate(2deg);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 10px 25px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, 
+                #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #a8e6cf, #ffd3a5);
+            background-size: 300% 100%;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .game-card:hover::after {
+            opacity: 1;
+        }
+
+        .game-icon {
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.3));
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-description {
+            color: #5a6c7d;
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .game-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-tag:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24, #ff9ff3);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 6px 20px rgba(255, 107, 107, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 1rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .play-button:hover::before {
+            left: 100%;
+        }
+
+        .play-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 10px 30px rgba(255, 107, 107, 0.6),
+                0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 3rem;
+            }
+            
+            .title::before,
+            .title::after {
+                display: none;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .game-card {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Play GOM</h1>
+            <p class="subtitle">Discover amazing web games in one place! ✨</p>
+        </header>
+
+        <div class="games-grid">
+
+            <div class="game-card" onclick="startGame('ramen-cooking')">
+                <div class="game-icon">🍜</div>
+                <h3 class="game-title">Ramyun Cooking Master</h3>
+                <p class="game-description">
+                    Cook and serve ramyun according to customer orders! 
+                    Perfect your timing to create the ultimate ramyun bowl.
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🍜 Cooking</span>
+                    <span class="feature-tag">⏰ Timing</span>
+                    <span class="feature-tag">💰 Revenue</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
+
+            <div class="game-card" onclick="startGame('tamagotchi')">
+                <div class="game-icon">🐱</div>
+                <h3 class="game-title">Digital Pet Life</h3>
+                <p class="game-description">
+                    Raise your cute virtual pet! 
+                    Manage your pet's hunger, happiness, and health as it grows.
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🐱 Pet Care</span>
+                    <span class="feature-tag">💝 Management</span>
+                    <span class="feature-tag">🎮 Minigames</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
+
+
+            <div class="game-card" onclick="startGame('slapbattle')">
+                <div class="game-icon">🥊</div>
+                <h3 class="game-title">Slap Battle</h3>
+                <p class="game-description">
+                    2-player slap battle! 
+                    Compete with friends to score points or drain HP to victory!
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🥊 2-Player</span>
+                    <span class="feature-tag">💥 Action</span>
+                    <span class="feature-tag">🎯 Combo System</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startGame(gameType) {
+            if (gameType === 'ramen-cooking') {
+                window.location.href = 'ramen-cooking-game.html';
+            } else if (gameType === 'tamagotchi') {
+                window.location.href = 'tamagotchi-game.html';
+            } else if (gameType === 'slapbattle') {
+                window.location.href = 'slap-battle.html';
+            } else {
+                alert('This game is still in development! 🚧');
+            }
+        }
+
+        // Enhanced game card hover effects
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.05) rotate(2deg)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1) rotate(0deg)';
+            });
+        });
+
+        // Add click animation to play buttons
+        document.querySelectorAll('.play-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
