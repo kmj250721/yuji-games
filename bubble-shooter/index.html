@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Shooter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Start Scene */
+        #start-scene {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .menu-btn {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            min-width: 250px;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .start-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 0 12px 25px rgba(255,107,107,0.4);
+        }
+
+        .how-to-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .how-to-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(78,205,196,0.4);
+        }
+
+        .sound-btn {
+            background: linear-gradient(45deg, #45b7d1, #96ceb4);
+            color: white;
+        }
+
+        .sound-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(69,183,209,0.4);
+        }
+
+        /* Background Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-delay: 0s; }
+        .bubble:nth-child(2) { width: 120px; height: 120px; left: 20%; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 60px; height: 60px; left: 35%; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 100px; height: 100px; left: 50%; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 90px; height: 90px; left: 70%; animation-delay: 3s; }
+        .bubble:nth-child(6) { width: 110px; height: 110px; left: 85%; animation-delay: 5s; }
+        .bubble:nth-child(7) { width: 70px; height: 70px; left: 15%; animation-delay: 1.5s; }
+        .bubble:nth-child(8) { width: 130px; height: 130px; left: 60%; animation-delay: 2.5s; }
+        .bubble:nth-child(9) { width: 50px; height: 50px; left: 80%; animation-delay: 3.5s; }
+        .bubble:nth-child(10) { width: 95px; height: 95px; left: 40%; animation-delay: 4.5s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Tutorial Popup */
+        #tutorial-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .tutorial-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: left;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: popupSlide 0.3s ease-out;
+        }
+
+        @keyframes popupSlide {
+            from {
+                transform: scale(0.8) translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .tutorial-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tutorial-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9ff, #e8f2ff);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tutorial-text {
+            font-size: 1.1rem;
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        /* Control Items */
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+        }
+
+        .control-icon {
+            font-size: 1.5rem;
+            min-width: 2rem;
+        }
+
+        .control-text {
+            font-size: 1rem;
+            color: #5a6c7d;
+        }
+
+        /* Rule Items */
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .rule-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .rule-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .rule-text {
+            font-size: 1rem;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        /* Visual Examples */
+        .visual-examples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .example-item {
+            text-align: center;
+        }
+
+        .example-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .bubble-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-bubble {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .demo-bubble.red {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+
+        .demo-bubble.blue {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .demo-arrow {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .demo-result {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Tips */
+        .tip-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            min-width: 2rem;
+        }
+
+        .tip-text {
+            font-size: 1rem;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        .tutorial-close {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .tutorial-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(255,107,107,0.3);
+        }
+
+        /* Responsive Design for Tutorial */
+        @media (max-width: 768px) {
+            .tutorial-content {
+                margin: 20px;
+                padding: 2rem;
+                max-height: 90vh;
+            }
+            
+            .visual-examples {
+                grid-template-columns: 1fr;
+            }
+            
+            .bubble-demo {
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+            
+            .demo-bubble {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        /* Score visibility enhancements */
+        .score-badge {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+        .combo-badge {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,255,255,0.4);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+        }
+        .timer-badge {
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+        }
+        .pulse { animation: pulse 0.5s ease; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* Game Scene (Hidden initially) */
+        #game-scene {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .menu-btn {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+                min-width: 200px;
+            }
+            
+            .tutorial-content {
+                margin: 20px;
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Scene -->
+        <div id="start-scene">
+            <h1 class="game-title">BUBBLE SHOOTER</h1>
+        <div class="menu-buttons">
+                <button class="menu-btn start-btn" onclick="startGame()">Start Game</button>
+                <button class="menu-btn how-to-btn" onclick="showTutorial()">How to Play</button>
+                <button class="menu-btn sound-btn" id="sound-toggle" onclick="toggleSound()">Sound ON</button>
+        </div>
+    </div>
+
+    <!-- Background Bubbles -->
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+
+        <!-- Tutorial Popup -->
+        <div id="tutorial-popup">
+            <div class="tutorial-content">
+                <h2 class="tutorial-title">🎯 How to Play</h2>
+                
+                <!-- Game Rules Section -->
+                <div class="tutorial-section">
+                    <h3 class="section-title">🎯 Objective</h3>
+                    <p class="tutorial-text">Match 3 or more same-colored bubbles to pop them and clear the board!</p>
+        </div>
+
+                <!-- Controls Section -->
+                <div class="tutorial-section">
+                    <h3 class="section-title">🎮 Controls</h3>
+                    <div class="control-item">
+                        <div class="control-icon">🖱️</div>
+                        <div class="control-text">Aim with the mouse and click to shoot a bubble</div>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-icon">🎨</div>
+                        <div class="control-text">3 or more connected bubbles of the same color will pop</div>
+        </div>
+    </div>
+
+                <!-- Game Mechanics Section -->
+                <div class="tutorial-section">
+                    <h3 class="section-title">⚙️ Game Rules</h3>
+                    <div class="rule-item">
+                        <div class="rule-number">1</div>
+                        <div class="rule-text">Shoot from the cannon to connect 3+ same-colored bubbles to remove them</div>
+            </div>
+                    <div class="rule-item">
+                        <div class="rule-number">2</div>
+                        <div class="rule-text">If no match is made, your combo resets — aim carefully</div>
+            </div>
+                    <div class="rule-item">
+                        <div class="rule-number">3</div>
+                        <div class="rule-text">Every few seconds, a new row falls — it speeds up over time</div>
+        </div>
+                    <div class="rule-item">
+                        <div class="rule-number">4</div>
+                        <div class="rule-text">Clear all bubbles to win</div>
+                    </div>
+                    <div class="rule-item">
+                        <div class="rule-number">5</div>
+                        <div class="rule-text">If any bubble touches the bottom, it's game over</div>
+        </div>
+    </div>
+
+                <!-- Visual Examples Section -->
+                <div class="tutorial-section">
+                    <h3 class="section-title">🎨 Visual Examples</h3>
+                    <div class="visual-examples">
+                        <div class="example-item">
+                            <div class="example-title">✅ Success</div>
+                            <div class="bubble-demo">
+                                <div class="demo-bubble red"></div>
+                                <div class="demo-bubble red"></div>
+                                <div class="demo-bubble red"></div>
+                                <div class="demo-arrow">→</div>
+                                <div class="demo-result">Popped!</div>
+        </div>
+                        </div>
+                        <div class="example-item">
+                            <div class="example-title">❌ Fail</div>
+                            <div class="bubble-demo">
+                                <div class="demo-bubble red"></div>
+                                <div class="demo-bubble blue"></div>
+                                <div class="demo-bubble red"></div>
+                                <div class="demo-arrow">→</div>
+                                <div class="demo-result">No Pop</div>
+                            </div>
+                        </div>
+        </div>
+    </div>
+
+                <!-- Tips Section -->
+                <div class="tutorial-section">
+                    <h3 class="section-title">💡 Strategy Tips</h3>
+                    <div class="tip-item">
+                        <div class="tip-icon">🏓</div>
+                        <div class="tip-text">Use wall bounces to hit bubbles behind obstacles</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">🎯</div>
+                        <div class="tip-text">Target upper clusters to drop unsupported bubbles</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon">⏰</div>
+                        <div class="tip-text">Keep a steady aim as rows fall faster over time</div>
+                    </div>
+                </div>
+
+                <button class="tutorial-close" onclick="hideTutorial()">Got it!</button>
+            </div>
+        </div>
+
+        <!-- Game Scene -->
+        <div id="game-scene">
+            <canvas id="game-canvas" width="900" height="650" style="background:#0b1226; border-radius:16px; box-shadow:0 20px 40px rgba(0,0,0,0.4);"></canvas>
+            <div id="hud" style="position:absolute; top:20px; left:50%; transform:translateX(-50%); display:flex; gap:20px; color:#fff; font-weight:800; text-shadow:0 2px 6px rgba(0,0,0,0.5); align-items:center;">
+                <div id="score-badge" class="score-badge">Score: <span id="score">0</span></div>
+                <div class="combo-badge">Combo: <span id="combo">x1</span></div>
+                <div class="timer-badge">Time: <span id="timer">01:00</span></div>
+            </div>
+            <div id="result-overlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.7); color:#fff; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; text-align:center;">
+                <div id="result-text" style="font-size:2rem; font-weight:900;">YOU WIN!</div>
+                <div id="result-stats" style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; font-weight:800;">
+                    <div>Score: <span id="final-score">0</span></div>
+                    <div id="time-box">Time: <span id="final-time">00:00</span></div>
+                    <div id="best-box" style="display:none;">Best: <span id="best-score">0</span></div>
+                </div>
+                <div style="display:flex; gap:12px; margin-top:8px;">
+                    <button id="primary-btn" style="padding:12px 24px; border:none; border-radius:12px; font-weight:800; cursor:pointer; background:#4ecdc4; color:#0b1226;">Replay</button>
+                    <button id="secondary-btn" style="padding:12px 24px; border:none; border-radius:12px; font-weight:800; cursor:pointer; background:#ffd166; color:#0b1226;">Main Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            soundEnabled: true,
+            currentScene: 'start' // 'start' or 'game'
+        };
+
+        // Start game
+        function startGame() {
+            console.log('Starting game...');
+            fadeOutIn('start-scene','game-scene');
+            gameState.currentScene = 'game';
+            initGameplay();
+        }
+
+        // Show tutorial
+        function showTutorial() {
+            document.getElementById('tutorial-popup').style.display = 'flex';
+        }
+
+        // Hide tutorial
+        function hideTutorial() {
+            document.getElementById('tutorial-popup').style.display = 'none';
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            const soundBtn = document.getElementById('sound-toggle');
+            
+            if (gameState.soundEnabled) {
+                soundBtn.textContent = 'Sound ON';
+                soundBtn.style.background = 'linear-gradient(45deg, #45b7d1, #96ceb4)';
+            } else {
+                soundBtn.textContent = 'Sound OFF';
+                soundBtn.style.background = 'linear-gradient(45deg, #ff6b6b, #ee5a24)';
+            }
+        }
+
+        // Close tutorial when clicking outside
+        document.getElementById('tutorial-popup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideTutorial();
+            }
+        });
+
+        // Initialize game
+        window.onload = function() {
+            console.log('Bubble Shooter game loaded!');
+        };
+
+        // ==========================
+        // Main Gameplay
+        // ==========================
+        // Pastel palette (5 colors)
+        const COLORS = ['#FFADB0', '#A7E8BD', '#A0D2FF', '#FFE29A', '#D9B8FF'];
+        const canvas = () => document.getElementById('game-canvas');
+        let ctx;
+
+        const game = {
+            width: 900,
+            height: 650,
+            gridCols: 16,
+            gridRows: 11,
+            radius: 18,
+            hSpacing: 36, // 2*radius
+            vSpacing: 32, // vertical spacing (hex-like)
+            offsetTop: 50,
+            grid: [], // cells with {x,y,color,alive}
+            shooter: {
+                x: 450,
+                y: 620,
+                angle: -Math.PI/2,
+                nextColor: null,
+                current: null // {x,y,dx,dy,color,active}
+            },
+            score: 0,
+            combo: 1,
+            running: false,
+            addRowPending: false,
+            // difficulty
+            level: 1,
+            rowsAdded: 0,
+            activeColors: 3,
+            // timing
+            lastFrameTs: 0,
+            targetFps: 60,
+            frameInterval: 1000/60,
+            // audio
+            audioCtx: null,
+            masterGain: null,
+            bgmNodes: null,
+            lastScore: 0,
+            // timer (seconds)
+            totalTime: 60,
+            timeLeft: 60,
+            timeMsAcc: 0,
+            // timed row add accelerator
+            rowTimerAcc: 0
+        };
+
+        function initGameplay() {
+            const c = canvas();
+            if (!c) return;
+            ctx = c.getContext('2d');
+
+            // init grid (top 5 rows filled)
+            game.grid = [];
+            for (let r = 0; r < game.gridRows; r++) {
+                const row = [];
+                for (let c = 0; c < game.gridCols; c++) {
+                    const isFilled = r < 5 ? 1 : 0;
+                    row.push(isFilled ? createBubbleAtGrid(r, c, randomColor()) : null);
+                }
+                game.grid.push(row);
+            }
+
+            // shooter
+            game.shooter.nextColor = randomColor();
+            spawnShot();
+            game.startTime = Date.now();
+            game.level = 1;
+            game.rowsAdded = 0;
+            // Start with full 5 colors as requested
+            game.activeColors = 5;
+            game.timeLeft = game.totalTime;
+            game.timeMsAcc = 0;
+            game.rowTimerAcc = 0;
+
+            // input
+            function pointerMove(px, py){
+                const rect = canvas().getBoundingClientRect();
+                const mx = px - rect.left;
+                const my = py - rect.top;
+                game.shooter.angle = Math.atan2(my - game.shooter.y, mx - game.shooter.x);
+                // restrict angle upwards only
+                if (game.shooter.angle > -0.2) game.shooter.angle = -0.2;
+                if (game.shooter.angle < -Math.PI + 0.2) game.shooter.angle = -Math.PI + 0.2;
+            }
+            canvas().addEventListener('mousemove', (e) => pointerMove(e.clientX, e.clientY));
+            canvas().addEventListener('click', () => {
+                if (game.shooter.current && !game.shooter.current.active) {
+                    // shoot current
+                    const speed = 8;
+                    game.shooter.current.dx = Math.cos(game.shooter.angle) * speed;
+                    game.shooter.current.dy = Math.sin(game.shooter.angle) * speed;
+                    game.shooter.current.active = true;
+                    playShoot();
+                }
+            });
+            // touch support
+            canvas().addEventListener('touchstart', (e)=>{
+                if (e.touches && e.touches[0]) {
+                    pointerMove(e.touches[0].clientX, e.touches[0].clientY);
+                    if (game.shooter.current && !game.shooter.current.active) {
+                        const speed = 8;
+                        game.shooter.current.dx = Math.cos(game.shooter.angle) * speed;
+                        game.shooter.current.dy = Math.sin(game.shooter.angle) * speed;
+                        game.shooter.current.active = true;
+                        playShoot();
+                    }
+                }
+                e.preventDefault();
+            }, { passive: false });
+            canvas().addEventListener('touchmove', (e)=>{
+                if (e.touches && e.touches[0]) pointerMove(e.touches[0].clientX, e.touches[0].clientY);
+                e.preventDefault();
+            }, { passive: false });
+
+            // loop
+            game.running = true;
+            // audio init / bgm
+            initAudio();
+            startBgm();
+            game.lastFrameTs = 0;
+            requestAnimationFrame(loop);
+        }
+
+        function restartGame() {
+            document.getElementById('result-overlay').style.display = 'none';
+            game.score = 0; game.combo = 1; updateHUD();
+            initGameplay();
+        }
+
+        function randomColor() {
+            const pool = COLORS.slice(0, Math.max(3, Math.min(COLORS.length, game.activeColors)));
+            return pool[Math.floor(Math.random()*pool.length)];
+        }
+
+        function createBubbleAtGrid(r, c, color) {
+            const x = gridToX(r, c);
+            const y = gridToY(r);
+            return { r, c, x, y, color, alive: true };
+        }
+
+        function gridToX(r, c) {
+            const offset = (r % 2 === 0) ? 0 : game.hSpacing/2;
+            return 50 + offset + c * game.hSpacing;
+        }
+        function gridToY(r) { return game.offsetTop + r * game.vSpacing; }
+
+        function spawnShot() {
+            game.shooter.current = {
+                x: game.shooter.x,
+                y: game.shooter.y,
+                dx: 0,
+                dy: 0,
+                color: game.shooter.nextColor || randomColor(),
+                active: false
+            };
+            game.shooter.nextColor = randomColor();
+        }
+
+        function loop(ts) {
+            if (!game.running) return;
+            if (!game.lastFrameTs) game.lastFrameTs = ts;
+            const delta = ts - game.lastFrameTs;
+            if (delta >= game.frameInterval) {
+                game.lastFrameTs = ts - (delta % game.frameInterval);
+                update();
+                draw();
+            }
+            if (checkWinLose()) return;
+            requestAnimationFrame(loop);
+        }
+
+        function update() {
+            // timer update (countdown)
+            const now = performance.now();
+            if (!update._lastTs) update._lastTs = now;
+            const d = now - update._lastTs; update._lastTs = now;
+            game.timeMsAcc += d;
+            game.rowTimerAcc += d;
+            while (game.timeMsAcc >= 1000) {
+                game.timeMsAcc -= 1000;
+                if (game.timeLeft > 0) {
+                    game.timeLeft -= 1;
+                    updateTimerUI();
+                    if (game.timeLeft <= 0) {
+                        showResult(false); // time up -> game over
+                        return;
+                    }
+                }
+            }
+
+            // time-based falling rows with acceleration
+            const interval = getRowIntervalMs();
+            if (game.rowTimerAcc >= interval) {
+                game.rowTimerAcc -= interval;
+                addNewRow();
+            }
+
+            const b = game.shooter.current;
+            if (b && b.active) {
+                b.x += b.dx; b.y += b.dy;
+                // wall bounce
+                if (b.x < game.radius + 10 || b.x > game.width - game.radius - 10) {
+                    b.dx *= -1;
+                    b.x = Math.max(game.radius + 10, Math.min(game.width - game.radius - 10, b.x));
+                }
+                // top collision or hit other bubbles
+                if (b.y < game.offsetTop + game.radius) {
+                    snapAndResolve(b);
+                    return;
+                }
+                // collision with existing
+                outer: for (let r = 0; r < game.gridRows; r++) {
+                    for (let c = 0; c < game.gridCols; c++) {
+                        const cell = game.grid[r][c];
+                        if (!cell) continue;
+                        const dx = cell.x - b.x; const dy = cell.y - b.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist <= game.radius*2 - 2) { // touch
+                            snapAndResolve(b);
+                            break outer;
+                        }
+                    }
+                }
+                // bottom (safety)
+                if (b.y > game.height - game.radius) {
+                    // 바닥 안전선: 미스 제거 → 콤보만 리셋하고 새 버블 준비
+                    game.combo = 1;
+                    spawnShot();
+                }
+            }
+
+            // pending row add
+            if (game.addRowPending) {
+                addNewRow();
+                game.addRowPending = false;
+            }
+        }
+
+        function getRowIntervalMs(){
+            // Slower by +15s overall: 25s -> 22s -> 19s
+            if (game.timeLeft > 40) return 25000; // 60-41s
+            if (game.timeLeft > 20) return 22000; // 40-21s
+            return 19000;                         // 20-0s
+        }
+
+        // MISS 시스템 제거됨
+
+        function snapAndResolve(b) {
+            // snap to nearest grid position
+            const { r, c } = findNearestGridCell(b.x, b.y);
+            if (r < 0 || r >= game.gridRows || c < 0 || c >= game.gridCols) {
+                // 격자 밖: 콤보 리셋 후 새 버블
+                game.combo = 1;
+                spawnShot();
+                return;
+            }
+            if (game.grid[r][c]) {
+                // find adjacent free spot (simple fall back: search neighbors)
+                const neighbors = neighborCoords(r, c);
+                let placed = false;
+                for (const [nr, nc] of neighbors) {
+                    if (inBounds(nr,nc) && !game.grid[nr][nc]) { placeAt(nr, nc, b.color); placed = true; break; }
+                }
+                if (!placed) { game.combo = 1; spawnShot(); return; }
+            } else {
+                placeAt(r, c, b.color);
+            }
+
+            // match and clear
+            const removed = resolveMatchesFrom(r, c);
+            if (removed >= 3) {
+                // combo and score
+                game.score += removed * 10 * game.combo;
+                game.combo = Math.min(game.combo + 1, 5);
+                playPop(Math.min(removed, 6));
+                // drop floating
+                const dropped = dropFloatingBubbles();
+                if (dropped > 0) {
+                    game.score += dropped * 15 * game.combo;
+                }
+            } else {
+                // 매칭 실패: 콤보만 리셋 (MISS 제거)
+                game.combo = 1;
+            }
+
+            updateHUD();
+            spawnShot();
+        }
+
+        function inBounds(r,c){ return r>=0 && r<game.gridRows && c>=0 && c<game.gridCols; }
+        function neighborCoords(r,c){
+            const odd = r % 2 === 1;
+            return [
+                [r, c-1], [r, c+1],
+                [r-1, c + (odd?0:-1)], [r-1, c + (odd?1:0)],
+                [r+1, c + (odd?0:-1)], [r+1, c + (odd?1:0)]
+            ];
+        }
+
+        function placeAt(r,c,color){
+            game.grid[r][c] = createBubbleAtGrid(r,c,color);
+        }
+
+        function findNearestGridCell(x,y){
+            // estimate row by y
+            let r = Math.round((y - game.offsetTop) / game.vSpacing);
+            r = Math.max(0, Math.min(game.gridRows-1, r));
+            // estimate col by x
+            const offset = (r % 2 === 0) ? 0 : game.hSpacing/2;
+            let c = Math.round((x - 50 - offset) / game.hSpacing);
+            c = Math.max(0, Math.min(game.gridCols-1, c));
+            return { r, c };
+        }
+
+        function resolveMatchesFrom(sr, sc){
+            const start = game.grid[sr][sc];
+            if (!start) return 0;
+            const color = start.color;
+            const visited = new Set();
+            const stack = [[sr,sc]];
+            const cluster = [];
+            while(stack.length){
+                const [r,c] = stack.pop();
+                const key = r+','+c; if (visited.has(key)) continue; visited.add(key);
+                const cell = game.grid[r][c]; if (!cell || cell.color!==color) continue;
+                cluster.push([r,c]);
+                for(const [nr,nc] of neighborCoords(r,c)) if(inBounds(nr,nc)) stack.push([nr,nc]);
+            }
+            if (cluster.length >= 3){
+                for(const [r,c] of cluster){ game.grid[r][c] = null; }
+                return cluster.length;
+            }
+            return 0;
+        }
+
+        function dropFloatingBubbles(){
+            // mark connected to top
+            const connected = Array.from({length:game.gridRows},()=>Array(game.gridCols).fill(false));
+            const q = [];
+            for(let c=0;c<game.gridCols;c++) if(game.grid[0][c]){ connected[0][c]=true; q.push([0,c]); }
+            while(q.length){
+                const [r,c] = q.shift();
+                for(const [nr,nc] of neighborCoords(r,c)){
+                    if(inBounds(nr,nc) && game.grid[nr][nc] && !connected[nr][nc]){
+                        connected[nr][nc]=true; q.push([nr,nc]);
+                    }
+                }
+            }
+            // drop not connected
+            let dropped = 0;
+            for(let r=0;r<game.gridRows;r++){
+                for(let c=0;c<game.gridCols;c++){
+                    if(game.grid[r][c] && !connected[r][c]){ game.grid[r][c]=null; dropped++; }
+                }
+            }
+            return dropped;
+        }
+
+        function addNewRow(){
+            // push rows down, remove bottom row
+            for(let r=game.gridRows-1; r>0; r--){
+                for(let c=0; c<game.gridCols; c++){
+                    const src = game.grid[r-1][c];
+                    game.grid[r][c] = src ? createBubbleAtGrid(r, c, src.color) : null;
+                }
+            }
+            // new top row
+            for(let c=0;c<game.gridCols;c++){
+                game.grid[0][c] = createBubbleAtGrid(0, c, randomColor());
+            }
+            game.rowsAdded++;
+            // difficulty ramp: every 2 added rows, increase active colors by 1 (max 5)
+            if (game.rowsAdded % 2 === 0 && game.activeColors < COLORS.length) {
+                // keep level increment for pacing, but cap colors at 5
+                game.activeColors = Math.min(COLORS.length, game.activeColors + 0);
+                game.level++;
+            }
+        }
+
+        function checkWinLose(){
+            // lose: any bubble reaches near bottom
+            for(let r=0;r<game.gridRows;r++){
+                for(let c=0;c<game.gridCols;c++){
+                    const cell = game.grid[r][c];
+                    if(cell && cell.y + game.radius >= game.height - 10){
+                        showResult(false);
+                    return true;
+                }
+            }
+            }
+            // win: no bubbles left
+            let any=false; outer: for(let r=0;r<game.gridRows;r++){ for(let c=0;c<game.gridCols;c++){ if(game.grid[r][c]){ any=true; break outer; } } }
+            if(!any){ showResult(true); return true; }
+            return false;
+        }
+
+        function showResult(win){
+            game.running = false;
+            const ov = document.getElementById('result-overlay');
+            const txt = document.getElementById('result-text');
+            const finalScoreEl = document.getElementById('final-score');
+            const finalTimeEl = document.getElementById('final-time');
+            const bestBox = document.getElementById('best-box');
+            const bestScoreEl = document.getElementById('best-score');
+            const timeBox = document.getElementById('time-box');
+            const primaryBtn = document.getElementById('primary-btn');
+            const secondaryBtn = document.getElementById('secondary-btn');
+
+            // compute elapsed
+            const elapsedSec = Math.max(0, Math.round((Date.now() - (game.startTime || Date.now())) / 1000));
+
+            // update best score
+            const prevBest = getBestScore();
+            if (game.score > prevBest) setBestScore(game.score);
+            const bestNow = getBestScore();
+
+            // fill UI
+            if (win) {
+                txt.textContent = 'Congratulations! You cleared all bubbles!';
+                finalScoreEl.textContent = game.score;
+                finalTimeEl.textContent = formatMMSS(elapsedSec);
+                timeBox.style.display = 'block';
+                bestBox.style.display = 'none';
+                primaryBtn.textContent = 'Replay';
+                playWin();
+            } else {
+                txt.textContent = 'Bubbles reached the bottom! Try again?';
+                finalScoreEl.textContent = game.score;
+                bestScoreEl.textContent = bestNow;
+                timeBox.style.display = 'none';
+                bestBox.style.display = 'block';
+                primaryBtn.textContent = 'Retry';
+                playLose();
+            }
+
+            primaryBtn.onclick = () => restartGame();
+            secondaryBtn.onclick = () => goToMainMenu();
+
+            ov.style.display = 'flex';
+            stopBgm();
+        }
+
+        function getBestScore(){
+            try { return parseInt(localStorage.getItem('bubbleShooterBestScore') || '0', 10) || 0; } catch(e){ return 0; }
+        }
+        function setBestScore(v){
+            try { localStorage.setItem('bubbleShooterBestScore', String(v)); } catch(e) {}
+        }
+        function formatMMSS(sec){
+            const m = Math.floor(sec/60).toString().padStart(2,'0');
+            const s = (sec%60).toString().padStart(2,'0');
+            return `${m}:${s}`;
+        }
+        function goToMainMenu(){
+            document.getElementById('result-overlay').style.display = 'none';
+            fadeOutIn('game-scene','start-scene');
+            gameState.currentScene = 'start';
+        }
+
+        // ============ Scene Transition (Fade) ============
+        function fadeOutIn(hideId, showId){
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            hideEl.style.transition = 'opacity 0.25s';
+            showEl.style.transition = 'opacity 0.25s';
+            showEl.style.opacity = 0;
+            showEl.style.display = 'block';
+            requestAnimationFrame(()=>{
+                hideEl.style.opacity = 0;
+                setTimeout(()=>{
+                    hideEl.style.display = 'none';
+                    showEl.style.opacity = 1;
+                }, 250);
+            });
+        }
+
+        // ============ Audio (WebAudio simple synth) ============
+        function initAudio(){
+            try {
+                if (!game.audioCtx) {
+                    game.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    game.masterGain = game.audioCtx.createGain();
+                    game.masterGain.gain.value = 0.3;
+                    game.masterGain.connect(game.audioCtx.destination);
+                }
+            } catch(e) { /* ignore */ }
+        }
+        function playTone(freq=440, dur=0.12, type='sine', vol=0.25){
+            if (!gameState.soundEnabled || !game.audioCtx) return;
+            const now = game.audioCtx.currentTime;
+            const osc = game.audioCtx.createOscillator();
+            const g = game.audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, now);
+            g.gain.setValueAtTime(0, now);
+            g.gain.linearRampToValueAtTime(vol, now + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+            osc.connect(g); g.connect(game.masterGain);
+            osc.start(now); osc.stop(now + dur + 0.02);
+        }
+        function playShoot(){ playTone(700, 0.08, 'square', 0.2); }
+        function playPop(count=3){
+            const base = 500;
+            for (let i=0;i<Math.min(count,6);i++) setTimeout(()=> playTone(base + i*60, 0.07, 'triangle', 0.18), i*40);
+        }
+        function playWin(){
+            const seq = [523,659,784,1046];
+            seq.forEach((f,i)=> setTimeout(()=> playTone(f,0.15,'sine',0.25), i*160));
+        }
+        function playLose(){
+            const seq = [600,420,300];
+            seq.forEach((f,i)=> setTimeout(()=> playTone(f,0.18,'sawtooth',0.22), i*180));
+        }
+        // Upbeat BGM: arpeggio + sidechain-like gating
+        function startBgm(){
+            if (!gameState.soundEnabled || !game.audioCtx || game.bgmNodes) return;
+            const now = game.audioCtx.currentTime;
+            const arp = game.audioCtx.createOscillator();
+            const pad = game.audioCtx.createOscillator();
+            const gate = game.audioCtx.createGain();
+            gate.gain.value = 0.0; // will be pulsed
+            arp.type = 'square';
+            pad.type = 'triangle';
+            // initial freqs
+            arp.frequency.setValueAtTime(392.00, now); // G4
+            pad.frequency.setValueAtTime(261.63, now); // C4
+            arp.connect(gate); pad.connect(gate); gate.connect(game.masterGain);
+            arp.start(); pad.start();
+
+            // beat clock (about 120 BPM -> 500ms per beat)
+            const patternNotes = [261.63, 329.63, 392.00, 523.25]; // C E G C5
+            let step = 0;
+            const tick = () => {
+                const t = game.audioCtx.currentTime;
+                // arpeggio note
+                const n = patternNotes[step % patternNotes.length];
+                arp.frequency.setValueAtTime(n, t);
+                // gate pulse (sidechain-like)
+                gate.gain.cancelScheduledValues(t);
+                gate.gain.setValueAtTime(0.0, t);
+                gate.gain.linearRampToValueAtTime(0.12, t + 0.01);
+                gate.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+                // pad slow drift
+                pad.frequency.linearRampToValueAtTime(261.63 + Math.sin(step/2)*8, t + 0.5);
+                step++;
+            };
+            tick();
+            const timer = setInterval(tick, 300); // a bit faster than 120 BPM for upbeat feel
+
+            game.bgmNodes = { arp, pad, gate, timer };
+        }
+        function stopBgm(){
+            if (!game.bgmNodes) return;
+            try { game.bgmNodes.arp.stop(); game.bgmNodes.pad.stop(); } catch(e){}
+            if (game.bgmNodes.timer) clearInterval(game.bgmNodes.timer);
+            game.bgmNodes = null;
+        }
+
+        function updateHUD(){
+            const scoreEl = document.getElementById('score');
+            const badge = document.getElementById('score-badge');
+            if (game.score !== game.lastScore) {
+                badge.classList.remove('pulse');
+                // force reflow for restart animation
+                void badge.offsetWidth;
+                badge.classList.add('pulse');
+                game.lastScore = game.score;
+            }
+            scoreEl.textContent = game.score;
+            document.getElementById('combo').textContent = 'x'+game.combo;
+        }
+
+        function updateTimerUI(){
+            const t = Math.max(0, game.timeLeft);
+            const m = Math.floor(t/60).toString().padStart(2,'0');
+            const s = (t%60).toString().padStart(2,'0');
+            const el = document.getElementById('timer');
+            if (el) el.textContent = `${m}:${s}`;
+        }
+
+        function draw(){
+            const c = canvas();
+            ctx.clearRect(0,0,c.width,c.height);
+
+            // draw grid bubbles
+            for(let r=0;r<game.gridRows;r++){
+                for(let col=0; col<game.gridCols; col++){
+                    const cell = game.grid[r][col];
+                    if(!cell) continue;
+                    drawBubble(cell.x, cell.y, cell.color);
+                }
+            }
+
+            // draw shooter base
+            drawCannon();
+
+            // draw current bubble
+            if(game.shooter.current){
+                const b = game.shooter.current;
+                drawBubble(b.x, b.y, b.color);
+            }
+
+            // next color preview
+            drawBubble(game.shooter.x, game.shooter.y+40, game.shooter.nextColor);
+        }
+
+        function drawCannon(){
+            // base
+            ctx.save();
+            ctx.translate(game.shooter.x, game.shooter.y);
+            // barrel
+            ctx.rotate(game.shooter.angle);
+            ctx.fillStyle = '#2b3a67';
+            ctx.fillRect(0, -8, 70, 16);
+            ctx.restore();
+            // base circle
+            ctx.beginPath(); ctx.arc(game.shooter.x, game.shooter.y, 24, 0, Math.PI*2);
+            ctx.fillStyle = '#1f2a4a'; ctx.fill();
+            ctx.lineWidth = 3; ctx.strokeStyle = '#3e4c7a'; ctx.stroke();
+        }
+
+        function drawBubble(x,y,color){
+            const r = game.radius;
+            const grd = ctx.createRadialGradient(x-r/3,y-r/3, r/4, x,y,r);
+            grd.addColorStop(0, '#ffffff');
+            grd.addColorStop(0.2, color);
+            grd.addColorStop(1, shade(color, -30));
+            ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle = grd; ctx.fill();
+            ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.stroke();
+        }
+
+        function shade(hex, percent){
+            const num = parseInt(hex.slice(1),16);
+            let r=(num>>16)+percent, g=((num>>8)&0x00FF)+percent, b=(num&0x0000FF)+percent;
+            r=Math.min(255,Math.max(0,r)); g=Math.min(255,Math.max(0,g)); b=Math.min(255,Math.max(0,b));
+            return '#' + (r<<16 | g<<8 | b).toString(16).padStart(6,'0');
+        }
+    </script>
+</body>
+</html>
