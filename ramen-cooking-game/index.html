@@ -8,62 +8,155 @@
         body {
             margin: 0;
             padding: 10px;
-            background: linear-gradient(135deg, #ff6b6b, #ffa500, #ff6b6b);
-            font-family: 'Arial', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 165, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 99, 71, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #2c1810, #3d2817, #4a2c1a);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
             overflow-x: auto;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 69, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         #game-container {
-            background: linear-gradient(145deg, #fff5f5, #ffe8e8);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            padding: 15px;
-            border: 3px solid #ff6b6b;
+            background: 
+                linear-gradient(145deg, #f5f5dc, #f0e68c),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.4),
+                inset 0 2px 10px rgba(255, 255, 255, 0.3),
+                0 0 0 1px rgba(139, 69, 19, 0.3);
+            padding: 25px;
+            border: 4px solid #8b4513;
             max-width: 100%;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        #game-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8b4513, #a0522d, #cd853f, #8b4513);
+            border-radius: 25px;
+            z-index: -1;
         }
 
         .game-title {
             text-align: center;
-            color: #ff6b6b;
+            background: linear-gradient(45deg, #8b4513, #cd853f, #daa520, #8b4513);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 20px rgba(255, 165, 0, 0.3);
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .game-title::before {
+            content: '🍜';
+            position: absolute;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%);
             font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: wiggle 2s ease-in-out infinite;
+        }
+
+        .game-title::after {
+            content: '🍜';
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            animation: wiggle 2s ease-in-out infinite reverse;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(-5deg); }
+            75% { transform: translateY(-50%) rotate(5deg); }
         }
 
         .game-subtitle {
             text-align: center;
-            color: #ff8c42;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            font-weight: 600;
+            color: #8b4513;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
         }
 
         .instructions {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 10px;
-            margin-top: 10px;
-            border: 2px solid #ff6b6b;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: 
+                linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 248, 220, 0.9)),
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 3px solid #8b4513;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8b4513, #a0522d, #cd853f, #8b4513);
+            border-radius: 15px;
+            z-index: -1;
         }
 
         .instructions h3 {
-            color: #ff6b6b;
-            margin: 0 0 10px 0;
-            font-size: 1.3rem;
+            color: #8b4513;
+            margin: 0 0 15px 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .instructions p {
-            margin: 5px 0;
-            color: #333;
-            font-size: 0.9rem;
+            margin: 8px 0;
+            color: #2c1810;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.4;
         }
 
         .score-display {
@@ -80,6 +173,386 @@
             margin-bottom: 10px;
         }
 
+        .timer-display {
+            background: 
+                linear-gradient(145deg, #f0f9ff, #e0f2fe),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 3px solid #0ea5e9;
+            font-weight: 900;
+            color: #0c4a6e;
+            font-size: 1.3rem;
+            box-shadow: 
+                0 8px 20px rgba(14, 165, 233, 0.3),
+                inset 0 2px 5px rgba(255, 255, 255, 0.5);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .timer-display::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #0ea5e9, #38bdf8, #7dd3fc, #0ea5e9);
+            border-radius: 25px;
+            z-index: -1;
+        }
+
+        .timer-dot {
+            width: 12px;
+            height: 12px;
+            background: 
+                radial-gradient(circle at 30% 30%, #0ea5e9, #0284c7),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 15px rgba(14, 165, 233, 0.8),
+                0 0 30px rgba(14, 165, 233, 0.4);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1; 
+                box-shadow: 
+                    0 0 15px rgba(14, 165, 233, 0.8),
+                    0 0 30px rgba(14, 165, 233, 0.4);
+            }
+            50% { 
+                transform: scale(1.3); 
+                opacity: 0.8; 
+                box-shadow: 
+                    0 0 20px rgba(14, 165, 233, 1),
+                    0 0 40px rgba(14, 165, 233, 0.6);
+            }
+        }
+
+        /* 라면 조리 애니메이션 */
+        .cooking-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 25px 0;
+            padding: 30px;
+            background: 
+                linear-gradient(145deg, rgba(139, 69, 19, 0.1), rgba(160, 82, 45, 0.05)),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(139, 69, 19, 0.3);
+            box-shadow: 
+                0 10px 25px rgba(0,0,0,0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .cooking-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 165, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 69, 0, 0.1) 0%, transparent 50%);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .cooking-pot {
+            width: 140px;
+            height: 90px;
+            background: 
+                linear-gradient(145deg, #cd853f, #a0522d, #8b4513),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            border-radius: 18px 18px 10px 10px;
+            position: relative;
+            border: 4px solid #654321;
+            margin-bottom: 20px;
+            box-shadow: 
+                inset 0 3px 6px rgba(0,0,0,0.4),
+                0 6px 12px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            z-index: 2;
+        }
+
+        .cooking-pot::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            right: 20px;
+            height: 12px;
+            background: 
+                linear-gradient(145deg, #a0522d, #8b4513, #654321),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 10px 10px 0 0;
+            border: 3px solid #654321;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.3),
+                0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .cooking-water {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            height: 0%;
+            background: 
+                linear-gradient(to top, #1e3a8a, #3b82f6, #60a5fa, #93c5fd),
+                radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            border-radius: 0 0 8px 8px;
+            transition: height 0.6s ease;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 3px 6px rgba(0,0,0,0.3),
+                0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .cooking-water.boiling {
+            background: 
+                linear-gradient(to top, #dc2626, #ef4444, #f97316, #fbbf24),
+                radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+            animation: boiling 1.2s ease-in-out infinite;
+            box-shadow: 
+                inset 0 3px 6px rgba(0,0,0,0.3),
+                0 0 15px rgba(239, 68, 68, 0.6),
+                0 0 30px rgba(251, 191, 36, 0.3);
+        }
+
+        @keyframes boiling {
+            0%, 100% { 
+                transform: scaleY(1) scaleX(1);
+                opacity: 0.9;
+            }
+            25% { 
+                transform: scaleY(1.05) scaleX(1.02);
+                opacity: 1;
+            }
+            50% { 
+                transform: scaleY(1.1) scaleX(1.05);
+                opacity: 1;
+            }
+            75% { 
+                transform: scaleY(1.05) scaleX(1.02);
+                opacity: 1;
+            }
+        }
+
+        .cooking-fire {
+            width: 70px;
+            height: 35px;
+            background: 
+                radial-gradient(ellipse at center, #ff8c00, #ff4500, #dc143c),
+                radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(255, 69, 0, 0.8),
+                0 0 40px rgba(255, 69, 0, 0.5),
+                0 0 60px rgba(255, 140, 0, 0.3);
+            z-index: 1;
+        }
+
+        .cooking-fire::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 10px;
+            width: 18px;
+            height: 22px;
+            background: 
+                radial-gradient(ellipse at center, #ffa500, #ff6b00),
+                radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flameDance 0.9s ease-in-out infinite alternate;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.6);
+        }
+
+        .cooking-fire::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: 12px;
+            width: 16px;
+            height: 20px;
+            background: 
+                radial-gradient(ellipse at center, #ff8c00, #ff4500),
+                radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flameDance 0.7s ease-in-out infinite alternate reverse;
+            box-shadow: 0 0 8px rgba(255, 140, 0, 0.5);
+        }
+
+        .cooking-fire.active {
+            opacity: 1;
+            animation: fireFlicker 0.5s infinite alternate;
+        }
+
+        @keyframes fireFlicker {
+            0% { 
+                transform: scale(1) rotate(-2deg);
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            25% { 
+                transform: scale(1.02) rotate(1deg);
+                filter: hue-rotate(5deg) brightness(1.1);
+            }
+            50% { 
+                transform: scale(1.05) rotate(-1deg);
+                filter: hue-rotate(10deg) brightness(1.2);
+            }
+            75% { 
+                transform: scale(1.02) rotate(2deg);
+                filter: hue-rotate(5deg) brightness(1.1);
+            }
+            100% { 
+                transform: scale(1) rotate(-2deg);
+                filter: hue-rotate(0deg) brightness(1);
+            }
+        }
+
+        @keyframes flameDance {
+            0% { 
+                transform: scale(1) rotate(-3deg) translateY(0px);
+                opacity: 0.9;
+            }
+            25% { 
+                transform: scale(1.05) rotate(1deg) translateY(-1px);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.1) rotate(3deg) translateY(-2px);
+                opacity: 1;
+            }
+            75% { 
+                transform: scale(1.05) rotate(-1deg) translateY(-1px);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(1) rotate(-3deg) translateY(0px);
+                opacity: 0.9;
+            }
+        }
+
+        .cooking-ingredients {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .ingredient-emoji {
+            position: absolute;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .ingredient-emoji.visible {
+            opacity: 1;
+        }
+
+        .ingredient-emoji:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .ingredient-emoji:nth-child(2) { top: 30%; right: 20%; animation-delay: 0.5s; }
+        .ingredient-emoji:nth-child(3) { top: 60%; left: 30%; animation-delay: 1s; }
+        .ingredient-emoji:nth-child(4) { top: 70%; right: 30%; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(3deg); }
+        }
+
+        .steam {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 25px;
+            background: 
+                linear-gradient(to top, 
+                    rgba(255, 255, 255, 0.9), 
+                    rgba(255, 255, 255, 0.6), 
+                    rgba(255, 255, 255, 0.3),
+                    transparent),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: steamRise 4s ease-in-out infinite;
+            filter: blur(1.5px);
+            z-index: 3;
+        }
+
+        .steam.active {
+            opacity: 1;
+        }
+
+        .steam:nth-child(1) { 
+            left: 35%; 
+            animation-delay: 0s; 
+            width: 4px;
+            height: 20px;
+        }
+        .steam:nth-child(2) { 
+            left: 50%; 
+            animation-delay: 1s; 
+            width: 6px;
+            height: 28px;
+        }
+        .steam:nth-child(3) { 
+            left: 65%; 
+            animation-delay: 2s; 
+            width: 5px;
+            height: 24px;
+        }
+
+        @keyframes steamRise {
+            0% { 
+                transform: translateX(-50%) translateY(0) scale(0.3) rotate(0deg);
+                opacity: 0;
+            }
+            10% { 
+                transform: translateX(-50%) translateY(-2px) scale(0.6) rotate(2deg);
+                opacity: 0.4;
+            }
+            25% { 
+                transform: translateX(-50%) translateY(-5px) scale(0.8) rotate(-1deg);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: translateX(-50%) translateY(-12px) scale(1.3) rotate(1deg);
+                opacity: 0.9;
+            }
+            75% { 
+                transform: translateX(-50%) translateY(-20px) scale(1.6) rotate(-2deg);
+                opacity: 0.6;
+            }
+            90% { 
+                transform: translateX(-50%) translateY(-28px) scale(1.2) rotate(1deg);
+                opacity: 0.3;
+            }
+            100% { 
+                transform: translateX(-50%) translateY(-35px) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
         .order-display {
             position: relative;
             background: rgba(255, 255, 255, 0.9);
@@ -94,6 +567,7 @@
             display: inline-block;
             margin-bottom: 10px;
         }
+
 
         .order-display h4 {
             margin: 0 0 10px 0;
@@ -185,13 +659,64 @@
 
         /* 게임 영역 스타일 */
         .game-area {
-            background: #f5f5dc;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 10px 0;
-            border: 2px solid #8b4513;
+            background: linear-gradient(145deg, #f5f5dc, #f0e68c);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 15px 0;
+            border: 3px solid #8b4513;
             position: relative;
-            min-height: 300px;
+            min-height: 500px;
+            box-shadow: 
+                inset 0 2px 10px rgba(0,0,0,0.1),
+                0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Game Over overlay */
+        .game-over-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .game-over-modal {
+            background: linear-gradient(145deg, #fff5f5, #ffe8e8);
+            border-radius: 16px;
+            border: 3px solid #ff6b6b;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            padding: 24px 28px;
+            text-align: center;
+            max-width: 420px;
+            width: calc(100% - 40px);
+        }
+
+        .game-over-title {
+            color: #ff6b6b;
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin: 0 0 8px 0;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+        }
+
+        .game-over-score {
+            color: #333;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+        }
+
+        .restart-btn {
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            border: 2px solid #ff8c42;
         }
 
         .kitchen {
@@ -203,159 +728,411 @@
         }
 
         .kettle {
-            background: #c0c0c0;
-            border-radius: 10px;
-            padding: 10px;
+            background: 
+                linear-gradient(145deg, #f8fafc, #e2e8f0, #cbd5e1),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 50%);
+            border-radius: 20px;
+            padding: 20px;
             cursor: pointer;
-            border: 2px solid #8b4513;
-            transition: all 0.3s ease;
+            border: 4px solid #8b4513;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.4);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .kettle::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            height: 10px;
+            background: 
+                linear-gradient(145deg, #ffffff, #f1f5f9, #e2e8f0),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .kettle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: scale(1.08) translateY(-4px);
+            box-shadow: 
+                0 12px 25px rgba(0,0,0,0.4),
+                inset 0 2px 5px rgba(255,255,255,0.5);
         }
 
         .kettle-body {
-            font-size: 2rem;
+            font-size: 3rem;
             text-align: center;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.4),
+                0 0 10px rgba(59, 130, 246, 0.3);
+            filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.2));
         }
 
-        .pot {
-            background: #8b4513;
-            border-radius: 10px;
-            padding: 15px;
-            border: 3px solid #654321;
-            position: relative;
-            min-width: 120px;
-            min-height: 80px;
-        }
 
-        .pot-body {
-            background: #2a1810;
-            border-radius: 5px;
-            height: 60px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .water {
-            background: #87ceeb;
-            height: 0%;
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            transition: height 0.5s ease;
-        }
-
-        .water-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            font-size: 0.8rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-            z-index: 10;
-        }
-
-        .required-water {
-            text-align: center;
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: #8b4513;
-            font-weight: bold;
-        }
 
         .gas-burner {
-            background: #666;
+            background: 
+                linear-gradient(145deg, #374151, #4b5563, #6b7280),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 90px;
+            height: 90px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #333;
-            transition: all 0.3s ease;
+            border: 5px solid #8b4513;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.4),
+                inset 0 2px 5px rgba(255,255,255,0.1),
+                0 0 0 2px rgba(139, 69, 19, 0.3);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .gas-burner::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 3px solid #6b7280;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle, #6b7280, #4b5563, #374151),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .gas-burner:hover {
-            transform: scale(1.1);
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 
+                0 12px 25px rgba(0,0,0,0.5),
+                inset 0 2px 5px rgba(255,255,255,0.1),
+                0 0 0 2px rgba(139, 69, 19, 0.4);
         }
 
-        .fire {
-            width: 20px;
-            height: 20px;
-            background: #ff4500;
-            border-radius: 50%;
+        .fire { display: none; }
+
+        /* 가스 버너 상태 표시(텍스쳐/글로우만) */
+        .gas-burner.on::before {
+            background: 
+                radial-gradient(circle, #fbbf24, #f59e0b, #d97706),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            box-shadow: 
+                0 0 20px rgba(251, 191, 36, 0.8), 
+                0 0 40px rgba(245, 158, 11, 0.4),
+                inset 0 2px 6px rgba(255,255,255,0.2);
+            border-color: #f59e0b;
+            animation: flicker 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { 
+                opacity: 0.8; 
+                transform: scale(1);
+                box-shadow: 
+                    0 0 20px rgba(251, 191, 36, 0.8), 
+                    0 0 40px rgba(245, 158, 11, 0.4),
+                    inset 0 2px 6px rgba(255,255,255,0.2);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1.02);
+                box-shadow: 
+                    0 0 25px rgba(251, 191, 36, 1), 
+                    0 0 50px rgba(245, 158, 11, 0.6),
+                    inset 0 2px 6px rgba(255,255,255,0.3);
+            }
+        }
+
+        .ingredients {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .ingredient-btn {
+            background: 
+                linear-gradient(145deg, #f8fafc, #e2e8f0, #cbd5e1),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            color: #1f2937;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 25px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 800;
+            transition: all 0.4s ease;
+            border: 4px solid #9ca3af;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.2),
+                inset 0 2px 5px rgba(255,255,255,0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.1);
+            text-shadow: 
+                1px 1px 2px rgba(0,0,0,0.1),
+                0 0 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+            backdrop-filter: blur(10px);
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .ingredient-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            border-radius: 20px;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
-        .fire.active {
-            opacity: 1;
-            animation: flicker 0.5s infinite alternate;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        .ingredients {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .ingredient-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: 2px solid #ff8c42;
-        }
-
         .ingredient-btn:hover {
-            background: #ff8c42;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: 
+                linear-gradient(145deg, #fef3c7, #fde68a, #f59e0b),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            transform: translateY(-5px) scale(1.08);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 20px rgba(245, 158, 11, 0.4);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .ingredient-btn:hover::before {
+            opacity: 1;
         }
 
         .ingredient-btn.added {
-            background: #4ade80;
+            background: 
+                linear-gradient(145deg, #dcfce7, #bbf7d0, #86efac),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
             border-color: #22c55e;
+            color: #166534;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.2),
+                inset 0 2px 5px rgba(255,255,255,0.6),
+                0 0 25px rgba(34, 197, 94, 0.5);
+            animation: successPulse 0.6s ease-out;
+        }
+
+        .ingredient-btn.added::after {
+            content: '✓';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(145deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+            animation: checkmarkBounce 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes checkmarkBounce {
+            0% { 
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% { 
+                transform: scale(1.2) rotate(180deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(1) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        /* 각 재료별 특별한 스타일 */
+        #ramen-btn {
+            background: 
+                linear-gradient(145deg, #fef3c7, #fde68a, #f59e0b),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        #ramen-btn:hover {
+            background: 
+                linear-gradient(145deg, #fbbf24, #f59e0b, #d97706),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 25px rgba(251, 191, 36, 0.6);
+        }
+
+        #soup-btn {
+            background: 
+                linear-gradient(145deg, #fef2f2, #fecaca, #f87171),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        #soup-btn:hover {
+            background: 
+                linear-gradient(145deg, #fca5a5, #f87171, #ef4444),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 25px rgba(239, 68, 68, 0.6);
+        }
+
+        #greenOnion-btn {
+            background: 
+                linear-gradient(145deg, #f0fdf4, #bbf7d0, #86efac),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-color: #22c55e;
+            color: #166534;
+        }
+
+        #greenOnion-btn:hover {
+            background: 
+                linear-gradient(145deg, #bbf7d0, #86efac, #4ade80),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 25px rgba(34, 197, 94, 0.6);
+        }
+
+        #egg-btn {
+            background: 
+                linear-gradient(145deg, #fffbeb, #fef3c7, #fde68a),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        #egg-btn:hover {
+            background: 
+                linear-gradient(145deg, #fef3c7, #fde68a, #fbbf24),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 25px rgba(251, 191, 36, 0.6);
+        }
+
+        #cheese-btn {
+            background: 
+                linear-gradient(145deg, #fefce8, #fef3c7, #fde047),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%);
+            border-color: #eab308;
+            color: #a16207;
+        }
+
+        #cheese-btn:hover {
+            background: 
+                linear-gradient(145deg, #fef3c7, #fde047, #facc15),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.8),
+                0 0 25px rgba(234, 179, 8, 0.6);
         }
 
         .tray {
-            background: #ccc;
-            border-radius: 10px;
-            padding: 15px;
+            background: 
+                linear-gradient(145deg, #f8fafc, #e2e8f0, #cbd5e1),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 50%);
+            border-radius: 20px;
+            padding: 25px;
             cursor: pointer;
-            border: 2px solid #999;
-            transition: all 0.3s ease;
+            border: 4px solid #8b4513;
+            transition: all 0.4s ease;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.3),
+                inset 0 2px 5px rgba(255,255,255,0.4);
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .tray::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            height: 10px;
+            background: 
+                linear-gradient(90deg, #ffffff, #f1f5f9, #e2e8f0),
+                radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .tray:hover {
-            background: #4ade80;
-            transform: scale(1.05);
+            background: 
+                linear-gradient(145deg, #4ade80, #22c55e, #16a34a),
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            transform: scale(1.08) translateY(-4px);
+            box-shadow: 
+                0 12px 25px rgba(0,0,0,0.4),
+                inset 0 2px 5px rgba(255,255,255,0.5),
+                0 0 20px rgba(34, 197, 94, 0.6);
         }
 
         .tray-body {
-            font-size: 1.2rem;
+            font-size: 1.6rem;
             text-align: center;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.4),
+                0 0 10px rgba(34, 197, 94, 0.3);
+            font-weight: 700;
+            filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.2));
         }
 
         .character {
             font-size: 3rem;
             animation: bounce 2s infinite;
+        }
+
+        .water-display {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-weight: bold;
+            color: #1e40af;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+            display: inline-block;
+            margin-top: 8px;
         }
 
         @keyframes bounce {
@@ -364,37 +1141,134 @@
             60% { transform: translateY(-5px); }
         }
 
+
+
+
+
+
+
+
         /* 반응형 디자인 */
+        @media (max-width: 1024px) {
+            #game-container {
+                max-width: 95%;
+                padding: 20px;
+            }
+            
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .game-title::before,
+            .game-title::after {
+                display: none;
+            }
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 5px;
             }
             
             #game-container {
-                padding: 10px;
+                padding: 15px;
+                border-radius: 20px;
             }
             
             .game-title {
                 font-size: 2rem;
+                letter-spacing: 1px;
             }
             
             .game-subtitle {
-                font-size: 1rem;
+                font-size: 1.2rem;
+            }
+            
+            .timer-display {
+                padding: 10px 16px;
+                font-size: 1.1rem;
+            }
+            
+            .cooking-animation {
+                padding: 20px;
+                margin: 15px 0;
+            }
+            
+            .cooking-pot {
+                width: 120px;
+                height: 75px;
+            }
+            
+            .kitchen {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
+            .kettle, .gas-burner, .tray {
+                min-width: 80px;
+                min-height: 80px;
+            }
+            
+            .ingredients {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                max-width: 300px;
+            }
+            
+            .ingredient-btn {
+                width: 100%;
+                padding: 15px 20px;
+                font-size: 1.1rem;
+                min-width: auto;
             }
             
             .instructions {
-                padding: 10px;
-                font-size: 0.8rem;
+                padding: 15px;
+            }
+            
+            .instructions h3 {
+                font-size: 1.3rem;
             }
             
             .instructions p {
-                font-size: 0.8rem;
+                font-size: 0.9rem;
             }
+            
         }
 
         @media (max-width: 480px) {
             .game-title {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
+            }
+            
+            .timer-display {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+            
+            .cooking-pot {
+                width: 100px;
+                height: 65px;
+            }
+            
+            .cooking-fire {
+                width: 60px;
+                height: 30px;
+            }
+            
+            .kettle, .gas-burner, .tray {
+                min-width: 70px;
+                min-height: 70px;
+            }
+            
+            .ingredient-btn {
+                padding: 12px 18px;
+                font-size: 1rem;
+            }
+            
+            .ingredients {
+                max-width: 280px;
             }
             
             .order-display, .score-display {
@@ -402,14 +1276,40 @@
                 padding: 8px;
             }
         }
+
     </style>
 </head>
 <body>
     <div id="game-container">
         <h1 class="game-title">🍜 Ramyun Cooking Challenge 🍜</h1>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap;">
             <div class="level-display" id="level-display">Level 1</div>
+            <div class="timer-display" id="timer-display">
+                <span class="timer-dot"></span>
+                <span id="game-timer">60</span> s
+            </div>
             <div class="target-display" id="target-display">Target: $3,000</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="level-display" id="sound-btn" onclick="toggleSound()" style="cursor: pointer; background: rgba(255, 255, 255, 0.9); border: 2px solid #4ade80; color: #4ade80; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">🔊 Sound On</button>
+                <button class="level-display" id="music-btn" onclick="toggleMusic()" style="cursor: pointer; background: rgba(255, 255, 255, 0.9); border: 2px solid #8b5cf6; color: #8b5cf6; padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">🎵 Music On</button>
+            </div>
+        </div>
+        
+        <!-- 라면 조리 애니메이션 -->
+        <div class="cooking-animation">
+            <div class="cooking-pot">
+                <div class="cooking-water" id="cooking-water"></div>
+                <div class="cooking-ingredients">
+                    <div class="ingredient-emoji" id="cooking-ramen">🍜</div>
+                    <div class="ingredient-emoji" id="cooking-soup">🍲</div>
+                    <div class="ingredient-emoji" id="cooking-greenOnion">🧅</div>
+                    <div class="ingredient-emoji" id="cooking-egg">🥚</div>
+                </div>
+            </div>
+            <div class="cooking-fire" id="cooking-fire"></div>
+            <div class="steam" id="steam1"></div>
+            <div class="steam" id="steam2"></div>
+            <div class="steam" id="steam3"></div>
         </div>
         
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
@@ -421,6 +1321,8 @@
                     <div class="patience-fill" id="patience-fill"></div>
                 </div>
             </div>
+            
+            
             <div class="score-display" id="score-display">Revenue: $0</div>
         </div>
         
@@ -433,21 +1335,15 @@
         
         <!-- 게임 영역 -->
         <div class="game-area">
+            
             <div class="kitchen">
                 <!-- 주전자 -->
                 <div class="kettle" id="kettle" onclick="pourWater()">
                     <div class="kettle-body">💧</div>
                     <div class="kettle-handle"></div>
+                    <div class="water-display" id="water-display">0ml</div>
                 </div>
                 
-                <!-- 냄비 -->
-                <div class="pot" id="pot">
-                    <div class="pot-body">
-                        <div class="water" id="water"></div>
-                        <div class="water-indicator" id="water-indicator">0ml</div>
-                    </div>
-                    <div class="required-water" id="required-water">필요: 50ml</div>
-                </div>
                 
                 <!-- 가스 불 -->
                 <div class="gas-burner" id="gas" onclick="toggleFire()">
@@ -456,11 +1352,26 @@
                 
                 <!-- 재료 버튼들 -->
                 <div class="ingredients">
-                    <button class="ingredient-btn" id="ramen-btn" onclick="addIngredient('ramen')">🍜 Noodles</button>
-                    <button class="ingredient-btn" id="soup-btn" onclick="addIngredient('soup')">🍲 Soup</button>
-                    <button class="ingredient-btn" id="greenOnion-btn" onclick="addIngredient('greenOnion')">🧅 Green Onion</button>
-                    <button class="ingredient-btn" id="egg-btn" onclick="addIngredient('egg')">🥚 Egg</button>
-                    <button class="ingredient-btn" id="cheese-btn" onclick="addIngredient('cheese')" style="display: none;">🧀 Cheese</button>
+                    <button class="ingredient-btn" id="ramen-btn" onclick="addIngredient('ramen')">
+                        <span style="font-size: 1.5rem;">🍜</span>
+                        <span>Noodles</span>
+                    </button>
+                    <button class="ingredient-btn" id="soup-btn" onclick="addIngredient('soup')">
+                        <span style="font-size: 1.5rem;">🍲</span>
+                        <span>Soup</span>
+                    </button>
+                    <button class="ingredient-btn" id="greenOnion-btn" onclick="addIngredient('greenOnion')">
+                        <span style="font-size: 1.5rem;">🧅</span>
+                        <span>Green Onion</span>
+                    </button>
+                    <button class="ingredient-btn" id="egg-btn" onclick="addIngredient('egg')">
+                        <span style="font-size: 1.5rem;">🥚</span>
+                        <span>Egg</span>
+                    </button>
+                    <button class="ingredient-btn" id="cheese-btn" onclick="addIngredient('cheese')" style="display: none;">
+                        <span style="font-size: 1.5rem;">🧀</span>
+                        <span>Cheese</span>
+                    </button>
                 </div>
                 
                 <!-- 서빙 쟁반 -->
@@ -483,12 +1394,23 @@
         </div>
     </div>
 
+    <!-- Game Over Overlay -->
+    <div class="game-over-overlay" id="game-over">
+        <div class="game-over-modal">
+            <div class="game-over-title">⏰ Time's Up!</div>
+            <div class="game-over-score">Final Revenue: <span id="final-revenue">$0</span></div>
+            <button class="restart-btn" onclick="resetGame()">Restart</button>
+        </div>
+    </div>
+
     <script>
         // 게임 상태
         let gameState = {
             score: 0,
             level: 1,
             target: 3000, // 레벨별 목표 매출
+            totalTime: 60,
+            timeLeft: 60,
             potWater: 0,
             maxWater: 100,
             ramenAdded: false,
@@ -504,48 +1426,570 @@
             serveCount: 0,
             waterPerClick: 20, // 클릭당 물량
             customerPatience: 30, // 손님 인내심 (초)
-            requiredWater: 50 // 손님이 요청한 물량
+            requiredWater: 50, // 손님이 요청한 물량
+            gameOver: false,
+            gameTimerId: null,
+            audioContext: null,
+            boilingSound: null,
+            soundEnabled: true,
+            ingredientSounds: {},
+            backgroundMusic: null,
+            musicEnabled: true
         };
 
         // 레벨별 설정
         const levelSettings = {
             1: {
-                target: 3000,
-                waterPerClick: 25,
-                customerPatience: 30,
-                optimalBoilTime: 5,
-                maxBoilTime: 10,
+                target: 4000,
+                waterPerClick: 20,
+                customerPatience: 22,
+                optimalBoilTime: 4,
+                maxBoilTime: 7,
                 availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg'],
-                orderComplexity: 0.3,
-                waterRange: { min: 40, max: 80 }, // 물량 범위
-                waterTolerance: 12.5 // 허용 오차 (클릭 단위의 절반)
+                orderComplexity: 0.5,
+                waterRange: { min: 40, max: 90 }, // 물량 범위 상향
+                waterTolerance: 8 // 허용 오차 축소
             },
             2: {
-                target: 8000,
-                waterPerClick: 20,
-                customerPatience: 25,
-                optimalBoilTime: 4,
-                maxBoilTime: 8,
-                availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'],
-                orderComplexity: 0.5,
-                waterRange: { min: 30, max: 90 },
-                waterTolerance: 10 // 클릭 단위의 절반
-            },
-            3: {
-                target: 15000,
+                target: 10000,
                 waterPerClick: 15,
-                customerPatience: 20,
-                optimalBoilTime: 3,
+                customerPatience: 18,
+                optimalBoilTime: 3.5,
                 maxBoilTime: 6,
                 availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'],
                 orderComplexity: 0.7,
+                waterRange: { min: 30, max: 100 },
+                waterTolerance: 6 // 오차 더 축소
+            },
+            3: {
+                target: 17000,
+                waterPerClick: 12,
+                customerPatience: 14,
+                optimalBoilTime: 3,
+                maxBoilTime: 5,
+                availableIngredients: ['ramen', 'soup', 'greenOnion', 'egg', 'cheese'],
+                orderComplexity: 0.85,
                 waterRange: { min: 20, max: 100 },
-                waterTolerance: 7.5 // 클릭 단위의 절반
+                waterTolerance: 4.5
             }
         };
 
+        // 오디오 초기화
+        function initAudio() {
+            try {
+                gameState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                createBoilingSound();
+                createBackgroundMusic();
+            } catch (e) {
+                console.log('Audio not supported');
+                gameState.soundEnabled = false;
+                gameState.musicEnabled = false;
+            }
+        }
+
+        // 배경음악 생성
+        function createBackgroundMusic() {
+            if (!gameState.audioContext || !gameState.musicEnabled) return;
+            
+            const now = gameState.audioContext.currentTime;
+            
+            // 메인 멜로디 (라면 테마)
+            const melody1 = gameState.audioContext.createOscillator();
+            const melody2 = gameState.audioContext.createOscillator();
+            const melody3 = gameState.audioContext.createOscillator();
+            
+            // 베이스 라인
+            const bass = gameState.audioContext.createOscillator();
+            
+            // 드럼 비트
+            const drum1 = gameState.audioContext.createOscillator();
+            const drum2 = gameState.audioContext.createOscillator();
+            
+            // 게인 노드들
+            const melodyGain = gameState.audioContext.createGain();
+            const bassGain = gameState.audioContext.createGain();
+            const drumGain = gameState.audioContext.createGain();
+            const masterGain = gameState.audioContext.createGain();
+            
+            // 필터들
+            const melodyFilter = gameState.audioContext.createBiquadFilter();
+            const bassFilter = gameState.audioContext.createBiquadFilter();
+            const drumFilter = gameState.audioContext.createBiquadFilter();
+            
+            // 멜로디 설정 (C major 스케일)
+            melody1.frequency.setValueAtTime(523.25, now); // C5
+            melody1.type = 'sine';
+            
+            melody2.frequency.setValueAtTime(659.25, now); // E5
+            melody2.type = 'triangle';
+            
+            melody3.frequency.setValueAtTime(783.99, now); // G5
+            melody3.type = 'sine';
+            
+            // 베이스 설정
+            bass.frequency.setValueAtTime(130.81, now); // C3
+            bass.type = 'sawtooth';
+            
+            // 드럼 설정
+            drum1.frequency.setValueAtTime(100, now);
+            drum1.type = 'square';
+            
+            drum2.frequency.setValueAtTime(200, now);
+            drum2.type = 'triangle';
+            
+            // 필터 설정
+            melodyFilter.type = 'lowpass';
+            melodyFilter.frequency.setValueAtTime(1000, now);
+            melodyFilter.Q.setValueAtTime(1, now);
+            
+            bassFilter.type = 'lowpass';
+            bassFilter.frequency.setValueAtTime(300, now);
+            bassFilter.Q.setValueAtTime(0.5, now);
+            
+            drumFilter.type = 'bandpass';
+            drumFilter.frequency.setValueAtTime(150, now);
+            drumFilter.Q.setValueAtTime(2, now);
+            
+            // 게인 설정
+            melodyGain.gain.setValueAtTime(0.08, now);
+            bassGain.gain.setValueAtTime(0.12, now);
+            drumGain.gain.setValueAtTime(0.05, now);
+            masterGain.gain.setValueAtTime(0.3, now);
+            
+            // 연결
+            melody1.connect(melodyFilter);
+            melody2.connect(melodyFilter);
+            melody3.connect(melodyFilter);
+            melodyFilter.connect(melodyGain);
+            
+            bass.connect(bassFilter);
+            bassFilter.connect(bassGain);
+            
+            drum1.connect(drumFilter);
+            drum2.connect(drumFilter);
+            drumFilter.connect(drumGain);
+            
+            melodyGain.connect(masterGain);
+            bassGain.connect(masterGain);
+            drumGain.connect(masterGain);
+            masterGain.connect(gameState.audioContext.destination);
+            
+            // 시작
+            melody1.start();
+            melody2.start();
+            melody3.start();
+            bass.start();
+            drum1.start();
+            drum2.start();
+            
+            // 멜로디 변화 애니메이션
+            const animateMelody = () => {
+                if (!gameState.backgroundMusic) return;
+                
+                const now = gameState.audioContext.currentTime;
+                const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77]; // C major scale
+                const randomNote1 = notes[Math.floor(Math.random() * notes.length)];
+                const randomNote2 = notes[Math.floor(Math.random() * notes.length)];
+                const randomNote3 = notes[Math.floor(Math.random() * notes.length)];
+                
+                melody1.frequency.exponentialRampToValueAtTime(randomNote1, now + 0.5);
+                melody2.frequency.exponentialRampToValueAtTime(randomNote2, now + 0.7);
+                melody3.frequency.exponentialRampToValueAtTime(randomNote3, now + 0.3);
+                
+                // 베이스도 변화
+                const bassNotes = [130.81, 146.83, 164.81, 174.61, 196.00];
+                const randomBass = bassNotes[Math.floor(Math.random() * bassNotes.length)];
+                bass.frequency.exponentialRampToValueAtTime(randomBass, now + 1);
+                
+                setTimeout(animateMelody, 2000 + Math.random() * 1000);
+            };
+            
+            // 배경음악 저장
+            gameState.backgroundMusic = {
+                melody1: melody1,
+                melody2: melody2,
+                melody3: melody3,
+                bass: bass,
+                drum1: drum1,
+                drum2: drum2,
+                melodyGain: melodyGain,
+                bassGain: bassGain,
+                drumGain: drumGain,
+                masterGain: masterGain,
+                animateMelody: animateMelody
+            };
+            
+            // 멜로디 애니메이션 시작
+            animateMelody();
+        }
+
+        // 배경음악 시작
+        function startBackgroundMusic() {
+            if (!gameState.musicEnabled || gameState.backgroundMusic) return;
+            createBackgroundMusic();
+        }
+
+        // 배경음악 정지
+        function stopBackgroundMusic() {
+            if (gameState.backgroundMusic) {
+                try {
+                    gameState.backgroundMusic.melody1.stop();
+                    gameState.backgroundMusic.melody2.stop();
+                    gameState.backgroundMusic.melody3.stop();
+                    gameState.backgroundMusic.bass.stop();
+                    gameState.backgroundMusic.drum1.stop();
+                    gameState.backgroundMusic.drum2.stop();
+                } catch (e) {
+                    // 이미 정지된 경우 무시
+                }
+                gameState.backgroundMusic = null;
+            }
+        }
+
+        // 끓는 물 소리 생성 - 뽀글뽀글 개선
+        function createBoilingSound() {
+            if (!gameState.audioContext || !gameState.soundEnabled) return;
+            
+            // 메인 끓는 소리 (저음)
+            const oscillator1 = gameState.audioContext.createOscillator();
+            const oscillator2 = gameState.audioContext.createOscillator();
+            
+            // 뽀글뽀글 버블 소리 (고음)
+            const bubbleOsc1 = gameState.audioContext.createOscillator();
+            const bubbleOsc2 = gameState.audioContext.createOscillator();
+            const bubbleOsc3 = gameState.audioContext.createOscillator();
+            
+            // 게인 노드들
+            const mainGain = gameState.audioContext.createGain();
+            const bubbleGain = gameState.audioContext.createGain();
+            const masterGain = gameState.audioContext.createGain();
+            
+            // 필터들
+            const lowFilter = gameState.audioContext.createBiquadFilter();
+            const highFilter = gameState.audioContext.createBiquadFilter();
+            
+            // 메인 끓는 소리 (저음역)
+            oscillator1.frequency.setValueAtTime(120, gameState.audioContext.currentTime);
+            oscillator1.type = 'sawtooth';
+            
+            oscillator2.frequency.setValueAtTime(80, gameState.audioContext.currentTime);
+            oscillator2.type = 'triangle';
+            
+            // 뽀글뽀글 버블 소리 (고음역)
+            bubbleOsc1.frequency.setValueAtTime(400, gameState.audioContext.currentTime);
+            bubbleOsc1.type = 'square';
+            
+            bubbleOsc2.frequency.setValueAtTime(600, gameState.audioContext.currentTime);
+            bubbleOsc2.type = 'sawtooth';
+            
+            bubbleOsc3.frequency.setValueAtTime(800, gameState.audioContext.currentTime);
+            bubbleOsc3.type = 'triangle';
+            
+            // 저역 필터 (메인 소리용)
+            lowFilter.type = 'lowpass';
+            lowFilter.frequency.setValueAtTime(300, gameState.audioContext.currentTime);
+            lowFilter.Q.setValueAtTime(0.5, gameState.audioContext.currentTime);
+            
+            // 고역 필터 (버블 소리용)
+            highFilter.type = 'highpass';
+            highFilter.frequency.setValueAtTime(350, gameState.audioContext.currentTime);
+            highFilter.Q.setValueAtTime(1, gameState.audioContext.currentTime);
+            
+            // 게인 설정
+            mainGain.gain.setValueAtTime(0.15, gameState.audioContext.currentTime);
+            bubbleGain.gain.setValueAtTime(0.08, gameState.audioContext.currentTime);
+            masterGain.gain.setValueAtTime(0.12, gameState.audioContext.currentTime);
+            
+            // 연결
+            oscillator1.connect(lowFilter);
+            oscillator2.connect(lowFilter);
+            lowFilter.connect(mainGain);
+            
+            bubbleOsc1.connect(highFilter);
+            bubbleOsc2.connect(highFilter);
+            bubbleOsc3.connect(highFilter);
+            highFilter.connect(bubbleGain);
+            
+            mainGain.connect(masterGain);
+            bubbleGain.connect(masterGain);
+            masterGain.connect(gameState.audioContext.destination);
+            
+            // 시작
+            oscillator1.start();
+            oscillator2.start();
+            bubbleOsc1.start();
+            bubbleOsc2.start();
+            bubbleOsc3.start();
+            
+            // 뽀글뽀글 애니메이션 효과
+            const animateBubbles = () => {
+                if (!gameState.boilingSound) return;
+                
+                const now = gameState.audioContext.currentTime;
+                const randomFreq1 = 350 + Math.random() * 200;
+                const randomFreq2 = 500 + Math.random() * 300;
+                const randomFreq3 = 700 + Math.random() * 400;
+                
+                bubbleOsc1.frequency.exponentialRampToValueAtTime(randomFreq1, now + 0.1);
+                bubbleOsc2.frequency.exponentialRampToValueAtTime(randomFreq2, now + 0.15);
+                bubbleOsc3.frequency.exponentialRampToValueAtTime(randomFreq3, now + 0.2);
+                
+                // 랜덤 볼륨 변화로 뽀글뽀글 효과
+                const randomGain = 0.05 + Math.random() * 0.1;
+                bubbleGain.gain.exponentialRampToValueAtTime(randomGain, now + 0.1);
+                
+                setTimeout(animateBubbles, 100 + Math.random() * 200);
+            };
+            
+            // 끓는 소리 저장
+            gameState.boilingSound = {
+                oscillator1: oscillator1,
+                oscillator2: oscillator2,
+                bubbleOsc1: bubbleOsc1,
+                bubbleOsc2: bubbleOsc2,
+                bubbleOsc3: bubbleOsc3,
+                mainGain: mainGain,
+                bubbleGain: bubbleGain,
+                masterGain: masterGain,
+                lowFilter: lowFilter,
+                highFilter: highFilter,
+                animateBubbles: animateBubbles
+            };
+            
+            // 뽀글뽀글 애니메이션 시작
+            animateBubbles();
+        }
+
+        // 끓는 소리 시작
+        function startBoilingSound() {
+            if (!gameState.soundEnabled || gameState.boilingSound) return;
+            createBoilingSound();
+        }
+
+        // 끓는 소리 정지
+        function stopBoilingSound() {
+            if (gameState.boilingSound) {
+                try {
+                    // 모든 오실레이터 정지
+                    gameState.boilingSound.oscillator1.stop();
+                    gameState.boilingSound.oscillator2.stop();
+                    gameState.boilingSound.bubbleOsc1.stop();
+                    gameState.boilingSound.bubbleOsc2.stop();
+                    gameState.boilingSound.bubbleOsc3.stop();
+                } catch (e) {
+                    // 이미 정지된 경우 무시
+                }
+                gameState.boilingSound = null;
+            }
+        }
+
+        // 재료별 사운드 생성
+        function createIngredientSound(type) {
+            if (!gameState.audioContext || !gameState.soundEnabled) return;
+            
+            const now = gameState.audioContext.currentTime;
+            let sound = null;
+            
+            switch(type) {
+                case 'water':
+                    // 물 떨어지는 소리
+                    sound = createWaterSound(now);
+                    break;
+                case 'ramen':
+                    // 면 떨어지는 소리 (딱딱한 소리)
+                    sound = createRamenSound(now);
+                    break;
+                case 'soup':
+                    // 스프 부어지는 소리 (액체)
+                    sound = createSoupSound(now);
+                    break;
+                case 'greenOnion':
+                    // 파 썰리는 소리 (짧고 날카로운)
+                    sound = createGreenOnionSound(now);
+                    break;
+                case 'egg':
+                    // 계란 깨지는 소리 (딱 소리)
+                    sound = createEggSound(now);
+                    break;
+                case 'cheese':
+                    // 치즈 떨어지는 소리 (부드러운)
+                    sound = createCheeseSound(now);
+                    break;
+            }
+            
+            if (sound) {
+                // 0.5초 후 자동 정리
+                setTimeout(() => {
+                    try {
+                        sound.oscillator.stop();
+                    } catch (e) {
+                        // 이미 정지된 경우 무시
+                    }
+                }, 500);
+            }
+        }
+
+        // 물 떨어지는 소리
+        function createWaterSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(800, now);
+            oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+            oscillator.type = 'sine';
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1000, now);
+            
+            gainNode.gain.setValueAtTime(0.3, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.3);
+            
+            return { oscillator };
+        }
+
+        // 면 떨어지는 소리
+        function createRamenSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(1200, now);
+            oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.2);
+            oscillator.type = 'square';
+            
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(800, now);
+            filter.Q.setValueAtTime(2, now);
+            
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.2);
+            
+            return { oscillator };
+        }
+
+        // 스프 부어지는 소리
+        function createSoupSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(600, now);
+            oscillator.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+            oscillator.type = 'sawtooth';
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(500, now);
+            
+            gainNode.gain.setValueAtTime(0.25, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.4);
+            
+            return { oscillator };
+        }
+
+        // 파 썰리는 소리
+        function createGreenOnionSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(2000, now);
+            oscillator.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+            oscillator.type = 'triangle';
+            
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(1000, now);
+            
+            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.1);
+            
+            return { oscillator };
+        }
+
+        // 계란 깨지는 소리
+        function createEggSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(1500, now);
+            oscillator.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+            oscillator.type = 'square';
+            
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1000, now);
+            filter.Q.setValueAtTime(3, now);
+            
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.15);
+            
+            return { oscillator };
+        }
+
+        // 치즈 떨어지는 소리
+        function createCheeseSound(now) {
+            const oscillator = gameState.audioContext.createOscillator();
+            const gainNode = gameState.audioContext.createGain();
+            const filter = gameState.audioContext.createBiquadFilter();
+            
+            oscillator.frequency.setValueAtTime(400, now);
+            oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+            oscillator.type = 'sine';
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, now);
+            
+            gainNode.gain.setValueAtTime(0.18, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(gameState.audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(now + 0.3);
+            
+            return { oscillator };
+        }
+
         // 게임 초기화
         function initGame() {
+            initAudio();
             updateLevelSettings();
             generateNewOrder();
             updateScoreDisplay();
@@ -554,6 +1998,56 @@
             updateIngredientButtons();
             updateProgressBar();
             startPatienceTimer();
+            startGameTimer();
+            // 배경음악 시작
+            startBackgroundMusic();
+        }
+
+        // 전체 게임 타이머 시작
+        function startGameTimer() {
+            // 초기화
+            gameState.timeLeft = gameState.totalTime;
+            gameState.gameOver = false;
+            updateGameTimerUI();
+
+            if (gameState.gameTimerId) clearInterval(gameState.gameTimerId);
+            gameState.gameTimerId = setInterval(() => {
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.gameTimerId);
+                    onTimeUp();
+                    return;
+                }
+                gameState.timeLeft--;
+                updateGameTimerUI();
+            }, 1000);
+        }
+
+        function updateGameTimerUI() {
+            const el = document.getElementById('game-timer');
+            if (el) el.textContent = gameState.timeLeft;
+        }
+
+        function onTimeUp() {
+            gameState.gameOver = true;
+
+            // 손님 인내심 타이머 정지
+            if (gameState.currentPatienceTimer) {
+                clearInterval(gameState.currentPatienceTimer);
+            }
+
+            // 불도 끔
+            gameState.boiling = false;
+            updateFireDisplay();
+
+            // 끓는 소리 정지
+            stopBoilingSound();
+
+            // 배경음악 정지
+            stopBackgroundMusic();
+
+            // 오버레이 표시
+            document.getElementById('final-revenue').textContent = `$${gameState.score}`;
+            document.getElementById('game-over').style.display = 'flex';
         }
 
         // 레벨 설정 업데이트
@@ -580,18 +2074,22 @@
 
         // Pour water
         function pourWater() {
+            if (gameState.gameOver) return;
             if (gameState.potWater < gameState.maxWater) {
                 gameState.potWater += gameState.waterPerClick;
                 if (gameState.potWater > gameState.maxWater) {
                     gameState.potWater = gameState.maxWater;
                 }
                 updateWaterLevel();
+                // 물 떨어지는 소리
+                createIngredientSound('water');
                 console.log('Water added, current amount:', gameState.potWater);
             }
         }
 
         // Turn fire on/off
         function toggleFire() {
+            if (gameState.gameOver) return;
             if (gameState.potWater > 0) {
                 gameState.boiling = !gameState.boiling;
                 if (gameState.boiling) {
@@ -604,18 +2102,26 @@
 
         // Add ingredient
         function addIngredient(type) {
+            if (gameState.gameOver) return;
             const settings = levelSettings[gameState.level];
             
             if (type === 'ramen' || type === 'soup') {
-                if (gameState.potWater > 0 && !gameState[type + 'Added']) {
+                // 불이 켜져 끓는 중일 때만 라면/수프 투입 가능
+                if (gameState.potWater > 0 && gameState.boiling && !gameState[type + 'Added']) {
                     gameState[type + 'Added'] = true;
                     updateIngredientButtons();
+                    // 재료 넣는 소리
+                    createIngredientSound(type);
                     console.log(type + ' added');
+                } else if (!gameState.boiling) {
+                    alert('Turn on the fire to boil water first!');
                 }
             } else if (type === 'greenOnion' || type === 'egg' || type === 'cheese') {
                 if (gameState.boiling && !gameState[type + 'Added'] && settings.availableIngredients.includes(type)) {
                     gameState[type + 'Added'] = true;
                     updateIngredientButtons();
+                    // 재료 넣는 소리
+                    createIngredientSound(type);
                     console.log(type + ' added (bonus!)');
                 }
             }
@@ -623,8 +2129,9 @@
 
         // Serve
         function serveRamen() {
+            if (gameState.gameOver) return;
             if (!gameState.ramenAdded || !gameState.soupAdded) {
-                alert('Ramyun and soup are required!');
+                alert('Add noodles and soup first! (Turn on fire and add ingredients)');
                 return;
             }
             
@@ -647,11 +2154,11 @@
             if (gameState.boiling) {
                 let boilTime = (Date.now() - gameState.boilStartTime) / 1000;
                 if (boilTime >= gameState.optimalBoilTime && boilTime <= gameState.maxBoilTime) {
-                    timingScore = 1.5; // Perfect timing
+                    timingScore = 1.4; // Perfect timing (더 까다롭게)
                 } else if (boilTime < gameState.optimalBoilTime) {
-                    timingScore = 0.7; // Too early
+                    timingScore = 0.6; // Too early (감점 확대)
                 } else {
-                    timingScore = 0.5; // Too late
+                    timingScore = 0.4; // Too late (감점 확대)
                 }
             }
             
@@ -664,9 +2171,9 @@
             
             // Bonus score (add green onion/egg while boiling)
             let bonusScore = 1;
-            if (gameState.greenOnionAdded && gameState.boiling) bonusScore += 0.3;
-            if (gameState.eggAdded && gameState.boiling) bonusScore += 0.3;
-            if (gameState.cheeseAdded && gameState.boiling) bonusScore += 0.3;
+            if (gameState.greenOnionAdded && gameState.boiling) bonusScore += 0.2;
+            if (gameState.eggAdded && gameState.boiling) bonusScore += 0.2;
+            if (gameState.cheeseAdded && gameState.boiling) bonusScore += 0.2;
             
             // Calculate final score
             let baseScore = 300;
@@ -722,7 +2229,6 @@
             };
             
             updateOrderDisplay();
-            updateRequiredWaterDisplay();
             startPatienceTimer();
         }
 
@@ -781,43 +2287,88 @@
 
         // Update water level
         function updateWaterLevel() {
-            let waterElement = document.getElementById('water');
-            let waterIndicator = document.getElementById('water-indicator');
-            let waterHeight = (gameState.potWater / gameState.maxWater) * 100;
+            // Update cooking animation water level
+            const cookingWater = document.getElementById('cooking-water');
+            const waterHeight = (gameState.potWater / gameState.maxWater) * 100;
+            if (cookingWater) {
+                cookingWater.style.height = waterHeight + '%';
+            }
             
-            waterElement.style.height = waterHeight + '%';
-            waterIndicator.textContent = gameState.potWater + 'ml';
-            
-            // Color change based on water amount
-            const settings = levelSettings[gameState.level];
-            const tolerance = settings.waterTolerance;
-            const required = gameState.requiredWater;
-            const current = gameState.potWater;
-            
-            if (Math.abs(current - required) <= tolerance) {
-                waterElement.style.backgroundColor = '#90ee90'; // Perfect amount - green
-            } else if (current > required + tolerance) {
-                waterElement.style.backgroundColor = '#ffb6c1'; // Too much - pink
-            } else if (current < required - tolerance) {
-                waterElement.style.backgroundColor = '#87ceeb'; // Not enough - blue
-            } else {
-                waterElement.style.backgroundColor = '#87ceeb'; // Default blue
+            // Update water display
+            const waterDisplay = document.getElementById('water-display');
+            if (waterDisplay) {
+                waterDisplay.textContent = gameState.potWater + 'ml';
             }
         }
 
-        // Update required water display
-        function updateRequiredWaterDisplay() {
-            document.getElementById('required-water').textContent = `Required: ${gameState.requiredWater}ml`;
+        // Update cooking animation
+        function updateCookingAnimation() {
+            // Update water level in cooking pot
+            const cookingWater = document.getElementById('cooking-water');
+            const waterHeight = (gameState.potWater / gameState.maxWater) * 100;
+            if (cookingWater) {
+                cookingWater.style.height = waterHeight + '%';
+            }
+            
+            // Update fire animation
+            const cookingFire = document.getElementById('cooking-fire');
+            if (gameState.boiling && gameState.potWater > 0) {
+                if (cookingFire) cookingFire.classList.add('active');
+                if (cookingWater) cookingWater.classList.add('boiling');
+                
+                // Show steam when boiling
+                const steam1 = document.getElementById('steam1');
+                const steam2 = document.getElementById('steam2');
+                const steam3 = document.getElementById('steam3');
+                if (steam1) steam1.classList.add('active');
+                if (steam2) steam2.classList.add('active');
+                if (steam3) steam3.classList.add('active');
+            } else {
+                if (cookingFire) cookingFire.classList.remove('active');
+                if (cookingWater) cookingWater.classList.remove('boiling');
+                
+                // Hide steam when not boiling
+                const steam1 = document.getElementById('steam1');
+                const steam2 = document.getElementById('steam2');
+                const steam3 = document.getElementById('steam3');
+                if (steam1) steam1.classList.remove('active');
+                if (steam2) steam2.classList.remove('active');
+                if (steam3) steam3.classList.remove('active');
+            }
+            
+            // Update ingredient visibility
+            const ingredients = ['ramen', 'soup', 'greenOnion', 'egg'];
+            ingredients.forEach(ingredient => {
+                const element = document.getElementById('cooking-' + ingredient);
+                if (element) {
+                    if (gameState[ingredient + 'Added']) {
+                        element.classList.add('visible');
+                    } else {
+                        element.classList.remove('visible');
+                    }
+                }
+            });
         }
+
 
         // Update fire display
         function updateFireDisplay() {
             let fireElement = document.getElementById('fire');
+            let burner = document.getElementById('gas');
             if (gameState.boiling) {
                 fireElement.classList.add('active');
+                if (burner) burner.classList.add('on');
+                // 끓는 소리 시작
+                startBoilingSound();
             } else {
                 fireElement.classList.remove('active');
+                if (burner) burner.classList.remove('on');
+                // 끓는 소리 정지
+                stopBoilingSound();
             }
+            
+            // Update cooking animation
+            updateCookingAnimation();
         }
 
         // Update ingredient button states
@@ -833,7 +2384,11 @@
                     }
                 }
             });
+            
+            // Update cooking animation
+            updateCookingAnimation();
         }
+
 
         // Update progress bar
         function updateProgressBar() {
@@ -864,7 +2419,7 @@
                     clearInterval(timer);
                     patienceBar.style.display = 'none';
                     // Customer left - penalty
-                    gameState.score = Math.max(0, gameState.score - 100);
+                    gameState.score = Math.max(0, gameState.score - 200);
                     updateScoreDisplay();
                     updateProgressBar();
                     generateNewOrder();
@@ -890,6 +2445,9 @@
                 clearInterval(gameState.currentPatienceTimer);
             }
             
+            // 끓는 소리 정지
+            stopBoilingSound();
+            
             updateWaterLevel();
             updateFireDisplay();
             updateIngredientButtons();
@@ -900,10 +2458,52 @@
             gameState.score = 0;
             gameState.level = 1;
             gameState.serveCount = 0;
+            gameState.gameOver = false;
+            if (gameState.gameTimerId) clearInterval(gameState.gameTimerId);
             resetCooking();
             updateLevelSettings();
             updateScoreDisplay();
             updateProgressBar();
+            document.getElementById('game-over').style.display = 'none';
+            startGameTimer();
+            // 배경음악 다시 시작
+            startBackgroundMusic();
+        }
+
+        // 사운드 토글
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            const soundBtn = document.getElementById('sound-btn');
+            if (gameState.soundEnabled) {
+                soundBtn.textContent = '🔊 Sound On';
+                soundBtn.style.color = '#4ade80';
+                soundBtn.style.borderColor = '#4ade80';
+            } else {
+                soundBtn.textContent = '🔇 Sound Off';
+                soundBtn.style.color = '#ef4444';
+                soundBtn.style.borderColor = '#ef4444';
+                // 끓는 소리 정지
+                stopBoilingSound();
+            }
+        }
+
+        // 배경음악 토글
+        function toggleMusic() {
+            gameState.musicEnabled = !gameState.musicEnabled;
+            const musicBtn = document.getElementById('music-btn');
+            if (gameState.musicEnabled) {
+                musicBtn.textContent = '🎵 Music On';
+                musicBtn.style.color = '#8b5cf6';
+                musicBtn.style.borderColor = '#8b5cf6';
+                // 배경음악 시작
+                startBackgroundMusic();
+            } else {
+                musicBtn.textContent = '🔇 Music Off';
+                musicBtn.style.color = '#ef4444';
+                musicBtn.style.borderColor = '#ef4444';
+                // 배경음악 정지
+                stopBackgroundMusic();
+            }
         }
 
         // Initialize game on page load
