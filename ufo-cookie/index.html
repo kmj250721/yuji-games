@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFO Cookie</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: 'Nunito', Arial, sans-serif;
+            background: radial-gradient(1200px 600px at 50% 100%, #1b2350, #0d1229);
+            color: #e5e7eb;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        #wrap { width: 100vw; height: 100vh; position: relative; overflow:hidden; }
+        .scene { position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+        #start, #result { flex-direction: column; gap: 14px; }
+        h1 { margin: 0; font-size: 3.2rem; letter-spacing: 1px; background: linear-gradient(45deg, #93c5fd, #a7f3d0); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; text-align:center; }
+        .btn { cursor:pointer; border:none; padding:12px 22px; border-radius:12px; font-weight:900; color:#0b1226; background:#60a5fa; box-shadow:0 10px 25px rgba(96,165,250,0.35); }
+        .btn.ghost { color:#e5e7eb; background:transparent; border:2px solid rgba(229,231,235,0.3); }
+        #hud { position:absolute; top:12px; left:50%; transform:translateX(-50%); display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+        .badge { background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); padding:8px 14px; border-radius:999px; font-weight:900; backdrop-filter: blur(6px); }
+        #progress { position:absolute; top:54px; left:50%; transform:translateX(-50%); width:min(520px, 80vw); height:12px; background: rgba(255,255,255,0.12); border-radius:999px; overflow:hidden; }
+        #progressFill { height:100%; width:0%; background: linear-gradient(90deg,#34d399,#60a5fa); }
+        #fx { position:absolute; inset:0; pointer-events:none; }
+        .fx-text { position:absolute; color:#fff; font-weight:900; text-shadow:0 2px 8px rgba(0,0,0,0.5); opacity:0; animation: pop 0.6s ease forwards; }
+        @keyframes pop { 0%{ transform: translateY(0) scale(0.8); opacity:0;} 30%{opacity:1;} 100%{ transform: translateY(-30px) scale(1); opacity:0; } }
+        .miss-flash { position:absolute; inset:0; background: rgba(220,38,38,0.22); animation: flashR 0.25s ease; }
+        @keyframes flashR { from { opacity:0.22; } to { opacity:0; } }
+        #stage { position:absolute; inset:0; display:none; }
+        #belt { position:absolute; left:5%; right:5%; bottom:20%; height: 12px; background: linear-gradient(90deg, #374151, #4b5563); border-radius: 8px; box-shadow: 0 6px 16px rgba(0,0,0,0.35) inset; }
+        .slot { position:absolute; bottom: calc(20% + 12px); width: 120px; height: 120px; transform: translateX(-50%); }
+        .slot .pad { position:absolute; left:0; right:0; top:0; bottom:0; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #374151, #1f2937); box-shadow: 0 8px 18px rgba(0,0,0,0.45); }
+        .slot .guide { position:absolute; left:50%; top:-28px; transform:translateX(-50%); font-weight:900; opacity:0.8; }
+        #player { position:absolute; bottom: calc(20% + 140px); width: 100px; height: 60px; transform: translateX(-50%); transition: left 0.08s ease; }
+        #player .ufo { position:absolute; inset:0; border-radius: 50% 50% 40% 40%; background: radial-gradient(circle at 35% 35%, #a78bfa, #6d28d9); box-shadow: 0 10px 24px rgba(109,40,217,0.45); }
+        #player .beam { position:absolute; left:50%; transform:translateX(-50%); top: 60px; width: 70px; height: 0; background: radial-gradient(ellipse at 50% 0%, rgba(167,139,250,0.55), rgba(167,139,250,0) 70%); pointer-events:none; transition: height 0.1s ease; }
+        .cookie { position:absolute; width: 90px; height: 28px; border-radius:14px; background: linear-gradient(180deg, #d97706, #b45309); box-shadow: 0 6px 12px rgba(0,0,0,0.4); }
+        .cream { position:absolute; width: 80px; height: 14px; left:5px; top:7px; border-radius: 10px; background: linear-gradient(90deg, #fef3c7, #fde68a); box-shadow: 0 3px 8px rgba(0,0,0,0.25) inset; }
+        #tips { position:absolute; bottom: 10px; left: 50%; transform: translateX(-50%); opacity: 0.8; }
+        /* Floating background */
+        #float-wrap { position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events: none; }
+        .float { position:absolute; bottom:-80px; font-size: 1.8rem; opacity: 0.35; animation: drift 8s linear infinite; }
+        @keyframes drift { from { transform: translateY(0) translateX(0) rotate(0deg); } to { transform: translateY(-120vh) translateX(30px) rotate(360deg); } }
+        /* Modal */
+        .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,0.55); z-index: 5; }
+        .panel { width:min(720px,92vw); max-height:80vh; overflow:auto; background:#0b1226; color:#e5e7eb; border:1px solid rgba(255,255,255,0.2); border-radius:16px; padding:18px; }
+        .row { margin:8px 0; line-height:1.6; }
+        /* Fade */
+        .fade-in { animation: fadein 0.35s ease forwards; }
+        .fade-out { animation: fadeout 0.3s ease forwards; }
+        @keyframes fadein { from { opacity:0; } to { opacity:1; } }
+        @keyframes fadeout { from { opacity:1; } to { opacity:0; } }
+        /* Result UFO animation */
+        #ufoAnim { width: 120px; height: 70px; margin: 10px auto; position: relative; }
+        #ufoAnim .ship { position:absolute; inset:0; border-radius: 50% 50% 40% 40%; background: radial-gradient(circle at 35% 35%, #a78bfa, #6d28d9); box-shadow: 0 10px 24px rgba(109,40,217,0.45); }
+        #ufoAnim .beam { position:absolute; left:50%; transform:translateX(-50%); top: 70px; width: 80px; height: 0; background: radial-gradient(ellipse at 50% 0%, rgba(167,139,250,0.55), rgba(167,139,250,0) 70%); }
+        .takeoff { animation: flyUp 1s ease forwards; }
+        .sadfly { animation: flyAway 1s ease forwards; filter: grayscale(0.4); }
+        @keyframes flyUp { to { transform: translateY(-160px); opacity: 0.0; } }
+        @keyframes flyAway { to { transform: translateY(60px) translateX(-80px); opacity: 0.0; } }
+        /* Mobile controls */
+        #touchControls { position:absolute; inset:0; display:none; align-items:flex-end; justify-content:space-between; padding: 18px; }
+        .tbtn { width:70px; height:70px; border-radius:50%; background: rgba(255,255,255,0.12); border:2px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:1.4rem; }
+    </style>
+</head>
+<body>
+    <div id="wrap">
+        <div id="start" class="scene" style="display:flex; z-index:1;">
+            <div id="float-wrap"></div>
+            <h1>UFO COOKIE 🍪🛸</h1>
+            <div>Create 50 cookie sets before time runs out!</div>
+            <div class="badge" id="bestLine" style="align-self:center;">Best Record: <span id="bestStart">0</span></div>
+            <div style="opacity:0.9;">Controls: ← → move, Space to abduct/drop cream</div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" id="playBtn">Start Game</button>
+                <button class="btn ghost" id="howBtn">How to Play</button>
+                <button class="btn ghost" id="settingsBtn">Settings</button>
+            </div>
+        </div>
+
+        <div id="stage">
+            <div id="hud">
+                <div class="badge">Score: <span id="score">0</span></div>
+                <div class="badge">Target: 50</div>
+                <div class="badge">Time: <span id="time">60</span>s</div>
+                <div class="badge">HP: <span id="hp">100</span>%</div>
+                <div class="badge">Round: <span id="round">1</span>/5</div>
+            </div>
+            <div id="progress"><div id="progressFill"></div></div>
+            <div id="belt"></div>
+            <div class="slot" id="s0" style="left:20%;">
+                <div class="pad"></div>
+                <div class="guide">1</div>
+            </div>
+            <div class="slot" id="s1" style="left:50%;">
+                <div class="pad"></div>
+                <div class="guide">2</div>
+            </div>
+            <div class="slot" id="s2" style="left:80%;">
+                <div class="pad"></div>
+                <div class="guide">3</div>
+            </div>
+            <div id="player" style="left:50%;">
+                <div class="ufo"></div>
+                <div class="beam" id="beam"></div>
+            </div>
+            <div id="tips">Tip: Perfect timing grants bonus points!</div>
+            <div id="fx"></div>
+        </div>
+
+        <div id="result" class="scene">
+            <h1>Result</h1>
+            <div id="ufoAnim"><div class="ship"></div><div class="beam"></div></div>
+            <div class="badge">Cookies: <span id="finalScore">0</span></div>
+            <div class="badge">Accuracy: <span id="finalAcc">0%</span></div>
+            <div class="badge">Bonus: <span id="finalBonus">0</span></div>
+            <div class="badge" id="outcome">You Win!</div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" id="retryBtn">Play Again</button>
+                <button class="btn ghost" id="menuBtn">Main Menu</button>
+            </div>
+        </div>
+        <div id="howModal" class="modal">
+            <div class="panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:900; font-size:1.2rem;">How to Play</div>
+                    <button class="btn ghost" id="howClose">Close</button>
+                </div>
+                <div class="row">Goal: Make at least 50 UFO cookies before the timer reaches zero.</div>
+                <div class="row">Controls: Use ← → to move between 3 lanes. Press Space to act.</div>
+                <div class="row">Flow: First Space adds cream, second Space abducts the finished cookie to score.</div>
+                <div class="row">Tip: Act quickly and precisely to reach the target!</div>
+            </div>
+        </div>
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="panel">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:900; font-size:1.2rem;">Settings</div>
+                    <button class="btn ghost" id="settingsClose">Close</button>
+                </div>
+                <div class="row"><label><input type="checkbox" id="optBgm" checked> BGM On</label></div>
+                <div class="row"><label><input type="checkbox" id="optSfx" checked> SFX On</label></div>
+                <div class="row">Difficulty:
+                    <label style="margin-left:10px;"><input type="radio" name="diff" value="easy"> Easy (40 cookies)</label>
+                    <label style="margin-left:10px;"><input type="radio" name="diff" value="normal" checked> Normal (50)</label>
+                    <label style="margin-left:10px;"><input type="radio" name="diff" value="hard"> Hard (70)</label>
+                </div>
+                <div class="row">Timer: <input type="number" id="optTime" min="20" max="180" value="60" style="width:90px;"> seconds</div>
+                <div class="row"><button class="btn" id="settingsSave">Save</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const game = {
+            running: false,
+            time: 60,
+            timerId: null,
+            score: 0,
+            target: 50,
+            round: 1,
+            maxRounds: 5,
+            lane: 1,
+            cookieQueue: [], // moving parts on belt
+            spawnTimer: 0,
+            spawnInterval: 900,
+            cooldown: 0,
+            combo: 0,
+            multiplier: 1.0,
+            maxHp: 100,
+            hp: 100,
+            audio: { ctx: null, master: null, se: null, musicGain: null, music: null },
+        };
+
+        const startEl = document.getElementById('start');
+        const stageEl = document.getElementById('stage');
+        const resultEl = document.getElementById('result');
+        const scoreEl2 = document.getElementById('score');
+        const timeEl = document.getElementById('time');
+        const finalScoreEl = document.getElementById('finalScore');
+        const outcomeEl = document.getElementById('outcome');
+        const playerEl = document.getElementById('player');
+        const beamEl = document.getElementById('beam');
+
+        function initAudio(){
+            if (game.audio.ctx) return;
+            try{
+                game.audio.ctx = new (window.AudioContext||window.webkitAudioContext)();
+                game.audio.master = game.audio.ctx.createGain();
+                game.audio.se = game.audio.ctx.createGain();
+                game.audio.se.gain.value = 0.4;
+                game.audio.se.connect(game.audio.master);
+                // soft looping bgm via oscillators
+                game.audio.musicGain = game.audio.ctx.createGain();
+                game.audio.musicGain.gain.value = 0.0;
+                game.audio.musicGain.connect(game.audio.master);
+                const o1 = game.audio.ctx.createOscillator(); o1.type='sine'; o1.frequency.value = 220;
+                const o2 = game.audio.ctx.createOscillator(); o2.type='triangle'; o2.frequency.value = 330;
+                o1.connect(game.audio.musicGain); o2.connect(game.audio.musicGain); o1.start(); o2.start();
+                game.audio.music = { o1, o2 };
+                const t=game.audio.ctx.currentTime; game.audio.musicGain.gain.setValueAtTime(0.0,t); game.audio.musicGain.gain.linearRampToValueAtTime(0.15,t+1.0);
+                game.audio.master.connect(game.audio.ctx.destination);
+            }catch(e){}
+        }
+        function tone(f=440,d=0.08,t='sine',v=0.3){ if(!game.audio.ctx||game.sfxOff) return; const now=game.audio.ctx.currentTime; const o=game.audio.ctx.createOscillator(); const g=game.audio.ctx.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(v, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+d); o.connect(g); g.connect(game.audio.se); o.start(); o.stop(now+d+0.02); }
+
+        function startGame(){
+            initAudio();
+            // difficulty/opts
+            const o = game.opts||{}; const diff = (o.diff||'normal');
+            const target = diff==='easy'? 40 : diff==='hard'? 70 : 50;
+            game.target = target; document.querySelector('#hud .badge:nth-child(2)').innerHTML = `Target: ${target}`;
+            const tlen = Math.max(20, Math.min(180, o.tlen||60));
+            game.running = true; game.time = tlen; game.score = 0; game.lane = 1; game.cookieQueue.length=0; game.attempts=0; game.combo=0; game.multiplier=1.0; game.hp = game.maxHp;
+            scoreEl2.textContent = '0'; timeEl.textContent = String(tlen); document.getElementById('hp').textContent = String(game.hp);
+            startEl.style.display = 'none'; resultEl.style.display = 'none'; stageEl.style.display = 'block';
+            spawnPart();
+            if (game.timerId) clearInterval(game.timerId);
+            game.timerId = setInterval(()=>{
+                game.time--; timeEl.textContent = game.time;
+                if (game.time<=0){
+                    if (game.score >= game.target) { clearInterval(game.timerId); return endGame(true); }
+                    // advance round if available
+                    if (game.round < game.maxRounds){
+                        nextRound();
+                    } else {
+                        clearInterval(game.timerId); endGame(false);
+                    }
+                }
+            }, 1000);
+            requestAnimationFrame(loop);
+        }
+
+        function nextRound(){
+            game.round += 1; document.getElementById('round').textContent = String(game.round);
+            // reset timer
+            game.time = Math.max(20, Math.min(180, (game.opts?.tlen)||60)); timeEl.textContent = String(game.time);
+            // ramp difficulty: faster spawns
+            game.spawnInterval = Math.max(350, Math.floor(game.spawnInterval * 0.9));
+            // minor HP recovery
+            game.hp = Math.min(game.maxHp, game.hp + 10); document.getElementById('hp').textContent = String(game.hp);
+        }
+        function endGame(win){
+            if (!game.running) return; game.running=false; if (game.timerId) clearInterval(game.timerId);
+            // stats
+            const acc = game.attempts>0? Math.round((game.score / game.attempts)*100) : 0;
+            const bonus = Math.max(0, Math.round(game.time * 0.5 + game.combo*2));
+            // persist best
+            try {
+                const prev = parseInt(localStorage.getItem('ufoBest')||'0',10);
+                game.best = Math.max(prev, game.score);
+                localStorage.setItem('ufoBest', String(game.best));
+            } catch(e){}
+            // fill UI
+            finalScoreEl.textContent = game.score;
+            document.getElementById('finalAcc').textContent = acc + '%';
+            document.getElementById('finalBonus').textContent = bonus;
+            const ufo = document.getElementById('ufoAnim');
+            ufo.classList.remove('takeoff','sadfly');
+            if (win || game.score>=game.target){
+                outcomeEl.textContent = '🎉 Mission Complete! You made 50+ UFO cookies!';
+                ufo.classList.add('takeoff');
+                document.getElementById('retryBtn').textContent = 'Play Again';
+            } else {
+                outcomeEl.textContent = `😢 Time’s up! You baked only ${game.score} cookies.`;
+                ufo.classList.add('sadfly');
+                document.getElementById('retryBtn').textContent = 'Retry';
+            }
+            stageEl.style.display = 'none'; resultEl.style.display = 'flex';
+            // show best on start next time
+            const bestStart = document.getElementById('bestStart'); if (bestStart) bestStart.textContent = String(game.best||game.score);
+        }
+
+        function spawnPart(){
+            const cookie = document.createElement('div'); cookie.className='cookie';
+            const fromLeft = Math.random() < 0.5;
+            const yBottom = 'calc(20% + 12px)';
+            cookie.style.bottom = yBottom;
+            cookie.style.left = fromLeft ? `-120px` : `calc(100% + 120px)`;
+            const cream = document.createElement('div'); cream.className='cream'; cream.style.opacity = '0.0'; cookie.appendChild(cream);
+            stageEl.appendChild(cookie);
+            const speedScale = 1 + (game.round-1)*0.15; // each round 15% faster
+            game.cookieQueue.push({ el: cookie, x: fromLeft? -120 : window.innerWidth + 120, dir: fromLeft? 1 : -1, speed: (140 + Math.random()*80) * speedScale, baked:false });
+        }
+
+        function action(){ // bake action
+            if (!game.running) return;
+            if (game.cooldown>0) return;
+            // show beam briefly
+            beamEl.style.height = '120px'; setTimeout(()=> beamEl.style.height='0px', 90);
+            tone(880,0.06,'square',0.35);
+            // success window
+            const px = playerEl.getBoundingClientRect().left + playerEl.offsetWidth/2;
+            const win = 60; // pixels window
+            let hit = null; let bestDist=1e9;
+            for (const p of game.cookieQueue){
+                const rect = p.el.getBoundingClientRect();
+                const cx = rect.left + rect.width/2;
+                const dist = Math.abs(cx - px);
+                if (dist < win && dist < bestDist) { bestDist = dist; hit = p; }
+            }
+            if (hit){
+                // bake success
+                if (!hit.baked) { hit.baked = true; hit.el.querySelector('.cream').style.opacity='1'; }
+                else {
+                    // score & remove
+                    game.combo += 1; game.multiplier = Math.min(1.5, 1.0 + (game.combo-1)*0.1);
+                    const add = Math.max(1, Math.round(1 * game.multiplier));
+                    game.score += add; scoreEl2.textContent = game.score; updateProgress();
+                    showFX('Perfect!', '#34d399'); tone(523,0.08,'triangle',0.4);
+                    hit.el.remove(); game.cookieQueue = game.cookieQueue.filter(k=>k!==hit);
+                    if (game.score>=game.target) return endGame(true);
+                }
+            } else {
+                // miss
+                game.combo = 0; game.multiplier = 1.0; game.cooldown = 500; missFlash(); tone(180,0.08,'sawtooth',0.3); setTimeout(()=> game.cooldown=0, 500);
+                // HP penalty
+                game.hp = Math.max(0, game.hp - 5); document.getElementById('hp').textContent = String(game.hp);
+                if (game.hp <= 0) return endGame(false);
+                showFX('Miss!', '#f87171');
+            }
+        }
+
+        function moveLane(dir){
+            if (!game.running) return;
+            game.lane = Math.max(0, Math.min(2, game.lane + dir));
+            const xPct = game.lane===0? 20 : game.lane===1? 50 : 80;
+            playerEl.style.left = `calc(${xPct}% )`;
+        }
+
+        // Loop (no heavy animation – just for minor effects if needed)
+        function loop(ts){ if (!game.running) return; requestAnimationFrame(loop);
+            // spawn parts over time
+            if (!game._last) game._last = ts; const dt = ts - game._last; game._last = ts;
+            game.spawnTimer += dt; if (game.spawnTimer >= game.spawnInterval){ game.spawnTimer = 0; spawnPart(); }
+            // move parts
+            for (const p of game.cookieQueue){
+                p.x += p.dir * (p.speed * (dt/1000));
+                p.el.style.left = `${p.x}px`;
+                // remove offscreen parts
+                if (p.dir===1 && p.x > window.innerWidth + 140) { p.el.remove(); game.cookieQueue = game.cookieQueue.filter(k=>k!==p); game.combo=0; game.multiplier=1.0; }
+                if (p.dir===-1 && p.x < -140) { p.el.remove(); game.cookieQueue = game.cookieQueue.filter(k=>k!==p); game.combo=0; game.multiplier=1.0; }
+            }
+            // background tension shift
+            const ratio = Math.max(0, Math.min(1, game.time/60));
+            document.body.style.background = `radial-gradient(1200px 600px at 50% 100%, rgba(27,35,80,${0.6+0.2*ratio}), #0d1229)`;
+        }
+
+        function showFX(text, color){
+            const fx = document.getElementById('fx');
+            const el = document.createElement('div'); el.className='fx-text';
+            el.textContent = text; el.style.left = (playerEl.offsetLeft + 20) + 'px'; el.style.top = (playerEl.offsetTop - 10) + 'px'; el.style.color = color;
+            fx.appendChild(el); setTimeout(()=> el.remove(), 650);
+        }
+        function missFlash(){ const fx = document.getElementById('fx'); const el = document.createElement('div'); el.className='miss-flash'; fx.appendChild(el); setTimeout(()=> el.remove(), 260); }
+        function updateProgress(){ const pct = Math.min(100, (game.score / game.target) * 100); document.getElementById('progressFill').style.width = pct + '%'; }
+
+        // Inputs
+        document.getElementById('playBtn').addEventListener('click', ()=>{ startEl.classList.add('fade-out'); setTimeout(()=>{ startEl.style.display='none'; startEl.classList.remove('fade-out'); startGame(); }, 280); });
+        const howModal = document.getElementById('howModal');
+        document.getElementById('howBtn').addEventListener('click', ()=>{ howModal.style.display='flex'; });
+        document.getElementById('howClose').addEventListener('click', ()=>{ howModal.style.display='none'; });
+        const settingsModal = document.getElementById('settingsModal');
+        document.getElementById('settingsBtn').addEventListener('click', ()=>{ settingsModal.style.display='flex'; });
+        document.getElementById('settingsClose').addEventListener('click', ()=>{ settingsModal.style.display='none'; });
+        document.getElementById('settingsSave').addEventListener('click', ()=>{
+            const bgmOn = document.getElementById('optBgm').checked;
+            const sfxOn = document.getElementById('optSfx').checked;
+            const diff = (document.querySelector('input[name="diff"]:checked')||{}).value || 'normal';
+            const tlen = Math.max(20, Math.min(180, parseInt(document.getElementById('optTime').value||'60',10)));
+            game.opts = { bgmOn, sfxOn, diff, tlen };
+            try { localStorage.setItem('ufoOpts', JSON.stringify(game.opts)); } catch(e){}
+            // apply toggles
+            if (game.audio && game.audio.musicGain) game.audio.musicGain.gain.value = bgmOn? 0.15 : 0.0;
+            game.sfxOff = !sfxOn;
+            settingsModal.style.display='none';
+        });
+        document.getElementById('retryBtn').addEventListener('click', ()=>{ resultEl.classList.add('fade-out'); setTimeout(()=>{ resultEl.style.display='none'; resultEl.classList.remove('fade-out'); startGame(); }, 260); });
+        document.getElementById('menuBtn').addEventListener('click', ()=> location.href='index.html');
+
+        window.addEventListener('keydown', (e)=>{
+            const k = e.key.toLowerCase();
+            if (k==='arrowleft') { e.preventDefault(); moveLane(-1); }
+            else if (k==='arrowright') { e.preventDefault(); moveLane(1); }
+            else if (k===' '){ e.preventDefault(); action(); }
+        });
+        window.addEventListener('click', ()=> action());
+        window.addEventListener('touchstart', (e)=>{ e.preventDefault(); action(); }, { passive:false });
+        // touch controls
+        ;(function addTouchControls(){
+            const div = document.createElement('div'); div.id='touchControls'; div.innerHTML = `
+                <div class="tbtn" id="tLeft">←</div>
+                <div class="tbtn" id="tAct">⏺</div>
+                <div class="tbtn" id="tRight">→</div>`;
+            stageEl.appendChild(div);
+            const show = /Mobi|Android/i.test(navigator.userAgent); if (show) div.style.display='flex';
+            div.querySelector('#tLeft').addEventListener('touchstart', (e)=>{ e.preventDefault(); moveLane(-1); }, { passive:false });
+            div.querySelector('#tRight').addEventListener('touchstart', (e)=>{ e.preventDefault(); moveLane(1); }, { passive:false });
+            div.querySelector('#tAct').addEventListener('touchstart', (e)=>{ e.preventDefault(); action(); }, { passive:false });
+        })();
+
+        // Start scene initially
+        ;(function initStart(){
+            // Floaters
+            const fw = document.getElementById('float-wrap');
+            if (fw){
+                for (let i=0;i<16;i++){
+                    const el = document.createElement('div'); el.className='float'; el.textContent = (i%2===0? '🍪':'🛸');
+                    el.style.left = Math.floor(Math.random()*100)+'%';
+                    el.style.animationDuration = (6 + Math.random()*7)+'s';
+                    el.style.animationDelay = (-Math.random()*6)+'s';
+                    el.style.fontSize = (1.2 + Math.random()*2.2)+'rem';
+                    fw.appendChild(el);
+                }
+            }
+            startEl.style.display='flex';
+            initAudio();
+            // show previous best
+            try{ const prev = parseInt(localStorage.getItem('ufoBest')||'0',10); if (!isNaN(prev)) document.getElementById('bestStart').textContent = String(prev); }catch(e){}
+            // load opts
+            try{ const o = JSON.parse(localStorage.getItem('ufoOpts')||'null'); if (o){ game.opts=o; document.getElementById('optBgm').checked = !!o.bgmOn; document.getElementById('optSfx').checked = !!o.sfxOn; document.getElementById('optTime').value = o.tlen||60; const m={easy:'easy',normal:'normal',hard:'hard'}; const v=m[o.diff]||'normal'; (document.querySelector(`input[name="diff"][value="${v}"]`)||{}).checked = true; if (game.audio && game.audio.musicGain) game.audio.musicGain.gain.value = o.bgmOn? 0.15 : 0.0; game.sfxOff = !o.sfxOn; } }catch(e){}
+        })();
+    </script>
+</body>
+</html>
+
