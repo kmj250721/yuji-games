@@ -405,8 +405,49 @@ b<!DOCTYPE html>
         </header>
 
         <div class="games-grid">
+            <div class="game-card" onclick="startGame('ufo-cookie')">
+                <div class="game-icon">🛸</div>
+                <h3 class="game-title">UFO Cookie</h3>
+                <p class="game-description">
+                    Make 50 UFO cookies before time runs out! Move lanes, time your bakes,
+                    and score combos with perfect timing.
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🍪 Casual</span>
+                    <span class="feature-tag">⏱️ Timer</span>
+                    <span class="feature-tag">🎯 Combo</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
+            <div class="game-card" onclick="startGame('rhythm')">
+                <div class="game-icon">🎵</div>
+                <h3 class="game-title">Beat Blaster</h3>
+                <p class="game-description">
+                    Rhythm action! Tap to the beat, hit the notes, and build your combo.
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🎵 Rhythm</span>
+                    <span class="feature-tag">⚡ Action</span>
+                    <span class="feature-tag">🎯 Timing</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
+            <div class="game-card" onclick="startGame('bubble-shooter')">
+                <div class="game-icon">🎯</div>
+                <h3 class="game-title">Bubble Shooter</h3>
+                <p class="game-description">
+                    Match 3 or more bubbles of the same color to pop them! 
+                    Clear all bubbles before they reach the bottom to win!
+                </p>
+                <div class="game-features">
+                    <span class="feature-tag">🎯 Puzzle</span>
+                    <span class="feature-tag">🎨 Color Match</span>
+                    <span class="feature-tag">⚡ Strategy</span>
+                </div>
+                <button class="play-button">Play Game</button>
+            </div>
 
-            <a href="ramen-cooking-game/index.html" class="game-card">
+            <div class="game-card" onclick="startGame('ramen-cooking')">
                 <div class="game-icon">🍜</div>
                 <h3 class="game-title">Ramyun Cooking Master</h3>
                 <p class="game-description">
@@ -419,25 +460,9 @@ b<!DOCTYPE html>
                     <span class="feature-tag">💰 Revenue</span>
                 </div>
                 <button class="play-button">Play Game</button>
-            </a>
+            </div>
 
-            <a href="tamagotchi-game/index.html" class="game-card">
-                <div class="game-icon">🐱</div>
-                <h3 class="game-title">Digital Pet Life</h3>
-                <p class="game-description">
-                    Raise your cute virtual pet! 
-                    Manage your pet's hunger, happiness, and health as it grows.
-                </p>
-                <div class="game-features">
-                    <span class="feature-tag">🐱 Pet Care</span>
-                    <span class="feature-tag">💝 Management</span>
-                    <span class="feature-tag">🎮 Minigames</span>
-                </div>
-                <button class="play-button">Play Game</button>
-            </a>
-
-
-            <a href="slap-battle/index.html" class="game-card">
+            <div class="game-card" onclick="startGame('slapbattle')">
                 <div class="game-icon">🥊</div>
                 <h3 class="game-title">Slap Battle</h3>
                 <p class="game-description">
@@ -450,16 +475,24 @@ b<!DOCTYPE html>
                     <span class="feature-tag">🎯 Combo System</span>
                 </div>
                 <button class="play-button">Play Game</button>
-            </a>
+            </div>
         </div>
     </div>
 
     <script>
         function startGame(gameType) {
-            if (gameType === 'ramen-cooking') {
+            if (gameType === 'ufo-cookie') {
+                window.location.href = 'ufo-cookie.html';
+                return;
+            }
+            if (gameType === 'rhythm') {
+                window.location.href = 'rhythm-action.html';
+                return;
+            }
+            if (gameType === 'bubble-shooter') {
+                window.location.href = 'bubble-shooter.html';
+            } else if (gameType === 'ramen-cooking') {
                 window.location.href = 'ramen-cooking-game.html';
-            } else if (gameType === 'tamagotchi') {
-                window.location.href = 'tamagotchi-game.html';
             } else if (gameType === 'slapbattle') {
                 window.location.href = 'slap-battle.html';
             } else {
