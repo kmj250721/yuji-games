@@ -1179,9 +1179,10 @@
         let gameState = {
             isRunning: true,
             timeLeft: 60, // Increased from 30 to 60 seconds
+            maxHp: 150,
             players: {
-                1: { hp: 100, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false },
-                2: { hp: 100, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false }
+                1: { hp: 150, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false },
+                2: { hp: 150, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false }
             },
             lastMoveTime: 0,
             moveInterval: 1000, // Move every 1 second
@@ -1197,10 +1198,17 @@
             },
             ai: {
                 lastActionTime: 0,
-                actionInterval: 1500, // AI acts every 1.5 seconds
-                difficulty: 'medium', // easy, medium, hard
-                aggression: 0.7, // 0-1, how likely to attack
-                ultimateUsage: 0.8 // 0-1, how likely to use ultimate when ready
+                actionInterval: 800, // AI acts every 0.8 seconds (faster)
+                difficulty: 'hard', // easy, medium, hard
+                aggression: 0.85, // 0-1, how likely to attack (increased)
+                ultimateUsage: 0.95, // 0-1, how likely to use ultimate when ready (increased)
+                reactionTime: 200, // AI reaction time in ms
+                predictionAccuracy: 0.8, // How well AI predicts player moves
+                defensiveMode: false, // AI defensive state
+                lastPlayerAction: null, // Track player's last action
+                actionHistory: [], // Track action patterns
+                comboCounter: 0, // Track consecutive attacks
+                maxCombo: 3 // Maximum consecutive attacks before defensive mode
             },
             match: {
                 currentSet: 1,
@@ -1219,8 +1227,8 @@
         function initGame() {
             gameState.isRunning = true;
             gameState.timeLeft = 60; // 60 seconds
-            gameState.players[1] = { hp: 100, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
-            gameState.players[2] = { hp: 100, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
+            gameState.players[1] = { hp: gameState.maxHp, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
+            gameState.players[2] = { hp: gameState.maxHp, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
             
             // Initialize AI
             gameState.ai.lastActionTime = 0;
@@ -1439,7 +1447,7 @@
             }
         }
 
-        // AI Decision System
+        // AI Decision System - Enhanced with faster reactions
         function updateAI() {
             const currentTime = Date.now();
             const ai = gameState.ai;
@@ -1447,7 +1455,12 @@
             
             // Check if AI can act (not stunned and enough time passed)
             if (player2.stunned > 0) return;
-            if (currentTime - ai.lastActionTime < ai.actionInterval) return;
+            
+            // Faster reaction time for counter-attacks
+            const timeSinceLastAction = currentTime - ai.lastActionTime;
+            const minInterval = ai.lastPlayerAction === 'slap' ? ai.reactionTime : ai.actionInterval;
+            
+            if (timeSinceLastAction < minInterval) return;
             
             // AI Decision Logic
             const decision = makeAIDecision();
@@ -1455,57 +1468,198 @@
             if (decision === 'ultimate' && player2.ultimateReady) {
                 useUltimate(2);
                 ai.lastActionTime = currentTime;
+                ai.comboCounter = 0; // Reset combo after ultimate
             } else if (decision === 'slap') {
                 slap(2);
+                ai.lastActionTime = currentTime;
+            } else {
+                // Even when waiting, update the action time to prevent spam
                 ai.lastActionTime = currentTime;
             }
         }
 
-        // AI Decision Making
+        // AI Decision Making - Enhanced with advanced strategies
         function makeAIDecision() {
             const ai = gameState.ai;
             const player2 = gameState.players[2];
             const player1 = gameState.players[1];
+            const currentTime = Date.now();
             
-            // Priority 1: Use ultimate if ready and conditions are met
+            // Track player action patterns
+            trackPlayerPatterns();
+            
+            // Calculate dynamic difficulty factors
+            const timePressure = Math.max(0, (60 - gameState.timeLeft) / 60); // 0-1 based on time elapsed
+            const healthAdvantage = (player2.hp - player1.hp) / gameState.maxHp; // -1 to 1
+            const scoreAdvantage = (player2.score - player1.score) / 50; // -1 to 1
+            const distance = Math.abs(player1.x - player2.x);
+            
+            // Advanced decision tree
+            
+            // Priority 1: Use ultimate if ready and optimal conditions
             if (player2.ultimateReady) {
-                const shouldUseUltimate = Math.random() < ai.ultimateUsage;
-                if (shouldUseUltimate) {
+                const ultimateChance = ai.ultimateUsage + (timePressure * 0.3) + (scoreAdvantage < -0.2 ? 0.2 : 0);
+                if (Math.random() < Math.min(0.98, ultimateChance)) {
+                    ai.comboCounter = 0;
                     return 'ultimate';
                 }
             }
             
-            // Priority 2: Regular attack based on aggression
-            const shouldAttack = Math.random() < ai.aggression;
-            if (shouldAttack) {
+            // Priority 2: Defensive mode logic
+            if (ai.defensiveMode) {
+                // Stay defensive for a short time
+                if (ai.comboCounter > 0) {
+                    ai.comboCounter--;
+                    return 'wait';
+                } else {
+                    ai.defensiveMode = false;
+                }
+            }
+            
+            // Priority 3: Counter-attack if player just attacked
+            if (ai.lastPlayerAction === 'slap' && Math.random() < 0.7) {
+                ai.comboCounter++;
                 return 'slap';
             }
             
-            // Priority 3: Defensive behavior (do nothing)
+            // Priority 4: Aggressive attack based on multiple factors
+            let attackChance = ai.aggression;
+            
+            // Increase attack chance based on various factors
+            if (timePressure > 0.5) attackChance += 0.2; // More aggressive as time runs out
+            if (scoreAdvantage < -0.3) attackChance += 0.3; // More aggressive when losing
+            if (healthAdvantage > 0.3) attackChance += 0.15; // More aggressive when healthy
+            if (distance < 200) attackChance += 0.1; // More aggressive when close
+            
+            // Decrease attack chance if in defensive mode
+            if (ai.defensiveMode) attackChance *= 0.3;
+            
+            // Combo limit - go defensive after max combo
+            if (ai.comboCounter >= ai.maxCombo) {
+                ai.defensiveMode = true;
+                ai.comboCounter = 5; // Stay defensive for 5 actions
+                return 'wait';
+            }
+            
+            if (Math.random() < Math.min(0.95, attackChance)) {
+                ai.comboCounter++;
+                return 'slap';
+            }
+            
+            // Priority 5: Strategic waiting
             return 'wait';
         }
+        
+        // Track player action patterns for better AI responses
+        function trackPlayerPatterns() {
+            const ai = gameState.ai;
+            const currentTime = Date.now();
+            
+            // Store recent actions (keep only last 15)
+            if (ai.actionHistory.length > 15) {
+                ai.actionHistory.shift();
+            }
+            
+            // Add current action to history
+            ai.actionHistory.push({
+                action: 'wait', // This will be updated when player acts
+                timestamp: currentTime
+            });
+            
+            // Analyze patterns for better AI responses
+            analyzePlayerPatterns();
+        }
+        
+        // Analyze player patterns to predict behavior
+        function analyzePlayerPatterns() {
+            const ai = gameState.ai;
+            const history = ai.actionHistory;
+            
+            if (history.length < 5) return;
+            
+            // Count recent actions
+            const recentActions = history.slice(-5);
+            const slapCount = recentActions.filter(a => a.action === 'slap').length;
+            const waitCount = recentActions.filter(a => a.action === 'wait').length;
+            
+            // Adjust AI behavior based on player patterns
+            if (slapCount >= 3) {
+                // Player is being very aggressive - AI should be more defensive
+                ai.defensiveMode = true;
+                ai.comboCounter = 3;
+            } else if (waitCount >= 4) {
+                // Player is being very defensive - AI should be more aggressive
+                ai.aggression = Math.min(0.98, ai.aggression + 0.1);
+            }
+        }
 
-        // Adjust AI difficulty based on game progress
+        // Adjust AI difficulty based on game progress - Enhanced
         function adjustAIDifficulty() {
             const ai = gameState.ai;
             const timeLeft = gameState.timeLeft;
             const player1Score = gameState.players[1].score;
             const player2Score = gameState.players[2].score;
+            const player1HP = gameState.players[1].hp;
+            const player2HP = gameState.players[2].hp;
             
-            // Increase aggression as time runs out
-            if (timeLeft < 20) {
-                ai.aggression = Math.min(0.9, ai.aggression + 0.1);
-                ai.actionInterval = Math.max(800, ai.actionInterval - 100);
+            // Dynamic difficulty scaling
+            const scoreDifference = player1Score - player2Score;
+            const hpDifference = player1HP - player2HP;
+            const timePressure = (60 - timeLeft) / 60;
+            
+            // Base difficulty adjustments
+            let baseAggression = 0.85;
+            let baseInterval = 800;
+            
+            // Time-based adjustments (more aggressive as time runs out)
+            if (timeLeft < 30) {
+                baseAggression += 0.1;
+                baseInterval = Math.max(600, baseInterval - 100);
+            }
+            if (timeLeft < 15) {
+                baseAggression += 0.15;
+                baseInterval = Math.max(500, baseInterval - 100);
+            }
+            if (timeLeft < 5) {
+                baseAggression += 0.2;
+                baseInterval = Math.max(400, baseInterval - 100);
             }
             
-            // Increase aggression if losing
-            if (player2Score < player1Score) {
-                ai.aggression = Math.min(0.95, ai.aggression + 0.05);
+            // Score-based adjustments
+            if (scoreDifference > 10) {
+                // AI is losing by a lot - become more aggressive
+                baseAggression += 0.2;
+                baseInterval = Math.max(500, baseInterval - 150);
+            } else if (scoreDifference > 5) {
+                // AI is losing - become more aggressive
+                baseAggression += 0.1;
+                baseInterval = Math.max(600, baseInterval - 100);
+            } else if (scoreDifference < -10) {
+                // AI is winning by a lot - become slightly less aggressive
+                baseAggression = Math.max(0.6, baseAggression - 0.1);
             }
             
-            // Decrease aggression if winning by a lot
-            if (player2Score > player1Score + 20) {
-                ai.aggression = Math.max(0.3, ai.aggression - 0.05);
+            // HP-based adjustments
+            if (hpDifference > 30) {
+                // Player has much more HP - AI becomes more aggressive
+                baseAggression += 0.15;
+            } else if (hpDifference < -30) {
+                // AI has much more HP - slightly less aggressive
+                baseAggression = Math.max(0.7, baseAggression - 0.05);
+            }
+            
+            // Apply the calculated values
+            ai.aggression = Math.min(0.98, Math.max(0.4, baseAggression));
+            ai.actionInterval = Math.max(300, Math.min(1200, baseInterval));
+            
+            // Ultimate usage adjustments
+            if (timeLeft < 20 || scoreDifference > 5) {
+                ai.ultimateUsage = Math.min(0.98, ai.ultimateUsage + 0.1);
+            }
+            
+            // Prediction accuracy adjustments
+            if (timePressure > 0.7) {
+                ai.predictionAccuracy = Math.min(0.95, ai.predictionAccuracy + 0.05);
             }
         }
 
@@ -1516,6 +1670,11 @@
 
             const opponent = player === 1 ? 2 : 1;
             const data = { score: 5, damage: 15, shake: 15, color: '#ff0000' };
+            
+            // Track player action for AI
+            if (player === 1) {
+                gameState.ai.lastPlayerAction = 'slap';
+            }
             
             // Update score and HP
             gameState.players[player].score += data.score;
@@ -1955,8 +2114,8 @@
         // Update UI
         function updateUI() {
             // Update HP bars
-            document.getElementById('player1Hp').style.width = `${gameState.players[1].hp}%`;
-            document.getElementById('player2Hp').style.width = `${gameState.players[2].hp}%`;
+            document.getElementById('player1Hp').style.width = `${Math.max(0, (gameState.players[1].hp / gameState.maxHp) * 100)}%`;
+            document.getElementById('player2Hp').style.width = `${Math.max(0, (gameState.players[2].hp / gameState.maxHp) * 100)}%`;
             
             // Update scores
             document.getElementById('player1Score').textContent = gameState.players[1].score;
@@ -2102,8 +2261,8 @@
 
         // Restart current set
         function restartCurrentSet() {
-            gameState.players[1] = { hp: 100, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
-            gameState.players[2] = { hp: 100, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
+            gameState.players[1] = { hp: gameState.maxHp, score: 0, x: 150, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
+            gameState.players[2] = { hp: gameState.maxHp, score: 0, x: 650, y: 200, stunned: 0, combo: 0, ultimate: 0, ultimateReady: false };
             gameState.timeLeft = 60;
             gameState.isRunning = true;
             
@@ -2329,7 +2488,7 @@
             
             ctx.fillStyle = '#ffeb3b';
             ctx.font = 'bold 16px Segoe UI, Arial';
-            ctx.fillText(`HP: ${gameState.players[1].hp}%`, offsetX + 20, offsetY + 55);
+            ctx.fillText(`HP: ${Math.max(0, Math.round((gameState.players[1].hp / gameState.maxHp) * 100))}%`, offsetX + 20, offsetY + 55);
             ctx.fillText(`Score: ${gameState.players[1].score}`, offsetX + 20, offsetY + 75);
             
             // Reset shadow
@@ -2354,7 +2513,7 @@
             
             ctx.fillStyle = '#ffeb3b';
             ctx.font = 'bold 16px Segoe UI, Arial';
-            ctx.fillText(`HP: ${gameState.players[2].hp}%`, offsetX + 780, offsetY + 55);
+            ctx.fillText(`HP: ${Math.max(0, Math.round((gameState.players[2].hp / gameState.maxHp) * 100))}%`, offsetX + 780, offsetY + 55);
             ctx.fillText(`Score: ${gameState.players[2].score}`, offsetX + 780, offsetY + 75);
             
             // Reset shadow
@@ -2469,6 +2628,9 @@
                 }
                 return;
             }
+
+            // Prevent auto-repeat when key is held down
+            if (e.repeat) return;
 
             switch(e.key.toLowerCase()) {
                 case 'e':
